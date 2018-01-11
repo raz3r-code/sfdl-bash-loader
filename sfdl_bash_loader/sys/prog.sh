@@ -50,6 +50,8 @@ function joinMe { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}
 
 while [ : ]
 do
+	name_chmod="$1"; echo ${var// /\ }
+	chmod -R $sfdl_chmod "$name_chmod"
 	if [ $sysnameX == "Darwin" ]
 	then
 		progB="$(du -k $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1 2>/dev/null)"
