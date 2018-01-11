@@ -12,7 +12,7 @@
 # 8888888P" d88P     888  "Y8888P"  888    888        88888888 "Y88P"  "Y888888  "Y88888  "Y8888  888
 # ==========================================================================================================
 # sfdl bash loader version
-sfdl_version="3.10"
+sfdl_version="3.10xeno"
 
 IFSDEFAULT=$IFS
 
@@ -267,7 +267,7 @@ else
 fi
 
 # haben wir sfdl files?
-for sfdl in "$sfdl_files"/*
+for sfdl in "$sfdl_files"/*.sfdl
 do
 	if [ -f "$sfdl" ]; then
 		# dieses sfdl files wird gerade verarbeitet
@@ -326,7 +326,9 @@ do
 				if [ -f "$sfdl_logs/$ladepfad"_lftp_index.log ]; then
 					rm -f "$sfdl_logs/$ladepfad"_lftp_index.log
 				fi
-
+				if [ -f "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
+                                        rm -f "$sfdl_logs/$ladepfad"_lftp_error.log
+                                fi
 				# index mit lftp laden (rekursiv)
 				if [ $bpathArrCnt == 1 ]; then
 					sfdl_wget_download=false
@@ -339,7 +341,15 @@ do
 					ladepfad="${i##*/}"
 					printText "Lade Index (lftp):" "$ladepfad"
 
-					lftp -p $port -u "$username","$password" -e "set ftp:ssl-allow no; open && find -l '$i' && exit" $host > $sfdl_logs/$ladepfad'_lftp_index.log'
+					lftp -p $port -u "$username","$password" -e "set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+					if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
+						printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
+                                                printErr "$ladesfdl wird uebersprungen!"
+                                                printLinie
+						mkdir -p "$sfdl_files"/error
+						mv "$sfdl" "$sfdl_files"/error/$name.sfdl
+                                                continue
+					fi
 					if [ -f "$sfdl_logs/$ladepfad"_lftp_index.log ]; then
 						IFS=$IFSDEFAULT
 						while IFS='' read -r line || [[ -n "$line" ]]; do
@@ -577,6 +587,9 @@ do
 						if [ -f "$sfdl_logs/$ladepfad"_lftp_index.log ]; then
 							rm -f "$sfdl_logs/$ladepfad"_lftp_index.log
 						fi
+						if [ -f "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
+                                                        rm -f "$sfdl_logs/$ladepfad"_lftp_error.log
+                                                fi
 
 						# index mit lftp laden (rekursiv)
 						if [ $bpathArrCnt == 1 ]; then
@@ -584,13 +597,21 @@ do
 							sfdl_lftp_download=true
 							
 							i=${bpath[0]}
-                            i="$(echo $i | sed 's/&#32;/ /g')"
+                            				i="$(echo $i | sed 's/&#32;/ /g')"
 							i="$(echo $i | sed 's@/*$@@g')" # danke tenti
 							
 							ladepfad="${i##*/}"
 							printText "Lade Index (lftp):" "$ladepfad"
 
-							lftp -p $port -u "$username","$password" -e "set ftp:ssl-allow no; open && find -l '$i' && exit" $host > $sfdl_logs/$ladepfad'_lftp_index.log'
+							lftp -p $port -u "$username","$password" -e "set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
+                                                		printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
+                                                		printErr "$ladesfdl wird uebersprungen!"
+                                                		printLinie
+								mkdir -p "$sfdl_files"/error
+                                                		mv "$sfdl" "$sfdl_files"/error/$name.sfdl
+								continue
+                                        		fi
 							if [ -f "$sfdl_logs/$ladepfad"_lftp_index.log ]; then
 								IFS=$IFSDEFAULT
 								while IFS='' read -r line || [[ -n "$line" ]]; do
@@ -612,9 +633,9 @@ do
 										fi
 									
 										if [ $byte -ne 0 ]; then
-                                            file=${line##*/}
-                                            bsize=$((bsize+byte))
-                                            filearray+=("$(echo "$file|$byte")")
+                                            						file=${line##*/}
+                                            						bsize=$((bsize+byte))
+                                            						filearray+=("$(echo "$file|$byte")")
 										fi
 									fi
 								done < "$sfdl_logs/$ladepfad"_lftp_index.log
@@ -990,13 +1011,15 @@ do
                         echo entpacke: "$i"
                     fi
                     unrar e -y -r -o- "$i" 2>> "$filePath/rarerr.txt" 1>> "$filePath/rarlog.txt"
-                    done
+                    chmod -R $sfdl_chmod $filePath
+		    done
                 else
 					for i in "${rarPart[@]}"; do
 						if [ $debug == true ]; then
 							echo entpacke: "$i"
 						fi
 						unrar e -y -r -o- "$i" 2>> "$filePath/rarerr.txt" 1>> "$filePath/rarlog.txt"
+						chmod -R $sfdl_chmod $filePath
 					done
 				fi
 
@@ -1238,12 +1261,16 @@ do
 done
 
 # sind in der zwischenzeit neue sfdl files hinzugekommen?
-sfldcheck="$(ls -A "$sfdl_files")"
-if [ ! -z "$sfldcheck" ]; then
+
+if [ `ls -a "$sfdl_files"/*.sfdl 2>/dev/null | wc -l` != 0 ] ; then
+	if [ $debug == true ]; then
+        	printText "Folgendes ist im sfdl Ordner:" "$(ls -A $sfdl_files/*.sfdl)"
+	fi
 	printText "INFO:" "Weitere SFDL Dateien gefunden! Starte in 5 Sekunden ..."
 	sleep 5
 	exec "$pwd/bashloader.sh"
 	exit 0
 else
+	printText "Alle Download abgeschlossen"	
 	exit 0
 fi
