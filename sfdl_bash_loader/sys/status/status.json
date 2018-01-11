@@ -1,0 +1,1 @@
+{ "BASHLoader" : [ { "version":"3.10", "date":"2017-12-22T16:18:01.000Z", "datetime":"22.12.2017 - 17:18:01", "status":"done", "sfdl":"NULL", "action":"Keine SFDL Datei gefunden! Ist /home/pi/sfdl_bash_loader/sys/../sfdl leer?", "loading_mt_files":"NULL", "loading_total_files":"NULL", "loading":"NULL", "loading_file_array":"NULL" } ] }

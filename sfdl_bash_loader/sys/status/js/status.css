@@ -1,0 +1,151 @@
+body {
+	padding: 0;
+	margin: 0;
+	font-size: 14px;
+	width: 100%;
+	background: #fffdd4;
+}
+.header {
+	width: 900px;
+	margin: 0 auto;
+}
+.footer {
+	width: 900px;
+	margin: 0 auto;
+	padding: 10px 0 10px 0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: normal;
+	font-variant: normal;
+	text-align: center;
+	vertical-align: text-top;
+	color: black;
+	background: white;
+	border-top: thick double #000000;
+}
+.tools {
+	width: 900px;
+	margin: 0 auto;
+	padding: 10px 0 10px 0;
+	border-top: thick double #000000;
+	background: #ff9422;
+	text-align: center;
+}
+.title {
+	height: 35px;
+	padding: 10px 10px 10px 10px;
+	margin: 0;
+	color: white;
+	background: black;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 30px;
+	font-weight: bold;
+	font-variant: normal;
+}
+.info {
+	height: 24px;
+	padding: 5px 10px 5px 10px;
+	margin: 0;
+	color: black;
+	background: #dadada;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: normal;
+	font-variant: normal;
+}
+.loader {
+	width: 900px;
+	padding: 0;
+	margin: 0 auto;
+	color: black;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	font-variant: normal;
+}
+.loader_head {
+	padding: 10px 10px 10px 10px;
+	margin: 0 auto;
+	color: black;
+	background: white;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: normal;
+	font-variant: normal;
+}
+.loader_progress {
+	padding: 10px 10px 10px 10px;
+	margin: 0 auto;
+	color: white;
+	background: black;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: normal;
+	font-variant: normal;
+}
+.loader_files {
+	width: 900px;
+	padding: 0;
+	margin: 0 auto;
+	color: black;
+	background: white;
+}
+ul.loader_items {
+	width: auto;
+	padding: 5px 0 5px 0;
+	margin: 0;
+	width: 100%;
+	float: left;
+	list-style-type: none;
+	display: inline-block;
+}
+ul.loader_items li {
+	padding: 0 5px;
+	margin: 0;
+	list-style: none;
+	border: 0;
+	float: left;
+	display: inline-block;
+}
+button {
+	padding: 3px;
+	margin: 0 0 0 10px;
+	cursor: pointer;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	font-variant: normal;
+}
+.clear {
+	clear: both;
+}
+.clearfix:after {
+	content: ".";
+	clear: both;
+	display: block;
+	visibility: hidden;
+	height: 0px;
+}
+progress[value] {
+	width: 200px;
+	height: 16px;
+	padding: 0;
+	margin: 0 auto;
+}
+input[type=file] {
+	display: block;
+	height: 0;
+	width: 0;
+}
+input[type=text] {
+	width: 874px;
+	padding: 3px;
+	margin: 0 auto;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	font-variant: normal;
+}
