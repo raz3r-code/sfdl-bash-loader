@@ -861,6 +861,7 @@ do
 		if [ $debug == false ]; then
 			if [ $sfdl_lftp_download == true ]; then
 				printText "Logs:" "Entferne Logfiles (lftp)"
+				rm -f "$sfdl_logs/$ladepfad"_lftp_error.log
 				rm -f "$sfdl_logs/$name"_lftp.log
 				rm -f "$sfdl_logs/$name"_download.log
 				rm -f "$sfdl_logs/dl.txt"
