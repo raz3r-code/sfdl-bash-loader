@@ -270,7 +270,7 @@ fi
 for sfdl in "$sfdl_files"/*.sfdl
 do
 	if [ $uscript_befor == 1 ]; then
-	$uscript_folder/$uscript_name
+	"$uscript_folder"/"$uscript_name"
 	fi
 	if [ -f "$sfdl" ]; then
 		# dieses sfdl files wird gerade verarbeitet
@@ -1074,7 +1074,7 @@ do
 			fi
 		fi
 		if [ $uscript_after == 1 ]; then
-		$uscript_folder/$uscript_name
+		"$uscript_folder"/"$uscript_name"
 		fi
 
 		# xrel.to - tmdb.org mod
