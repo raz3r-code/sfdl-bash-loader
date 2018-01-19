@@ -269,7 +269,7 @@ fi
 # haben wir sfdl files?
 for sfdl in "$sfdl_files"/*.sfdl
 do
-	if [ $uscript_befor == 1 ]; then
+	if [ $uscript_befor == true ]; then
 	"$uscript_folder"/"$uscript_name"
 	fi
 	if [ -f "$sfdl" ]; then
@@ -1073,7 +1073,7 @@ do
 				mv "$sfdl" "$sfdl_downloads/$name/$name.sfdl"
 			fi
 		fi
-		if [ $uscript_after == 1 ]; then
+		if [ $uscript_after == true ]; then
 		"$uscript_folder"/"$uscript_name"
 		fi
 
