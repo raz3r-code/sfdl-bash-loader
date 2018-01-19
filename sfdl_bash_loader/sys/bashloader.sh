@@ -271,7 +271,7 @@ for sfdl in "$sfdl_files"/*.sfdl
 do
 	if [ $uscript_befor == true ]; then
 	"$uscript_folder"/"$uscript_name"
-	printText "Script" "$uscript_name" "wird ausgeführt"
+	echo "Script" "$uscript_name" "wird ausgeführt"
 	fi
 	if [ -f "$sfdl" ]; then
 		# dieses sfdl files wird gerade verarbeitet
@@ -1076,7 +1076,7 @@ do
 		fi
 		if [ $uscript_after == true ]; then
 		"$uscript_folder"/"$uscript_name"
-		printText "Script" "$uscript_name" "wird ausgeführt"
+		echo "Script" "$uscript_name" "wird ausgeführt"
 		fi
 
 		# xrel.to - tmdb.org mod
