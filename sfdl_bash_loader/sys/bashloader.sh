@@ -344,8 +344,8 @@ do
 
 					ladepfad="${i##*/}"
 					printText "Lade Index (lftp):" "$ladepfad"
-					if [ proxy == true ]; then
-						if [ proxyauth == true ]; then
+					if [ $proxy == true ]; then
+						if [ $proxyauth == true ]; then
 							lftp -p $port -u "$username","$password" -e "set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 							fi
 					lftp -p $port -u "$username","$password" -e "set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
@@ -612,8 +612,8 @@ do
 							
 							ladepfad="${i##*/}"
 							printText "Lade Index (lftp):" "$ladepfad"
-						if [ proxy == true ]; then
-							if [ proxyauth == true ]; then
+						if [ $proxy == true ]; then
+							if [ $proxyauth == true ]; then
 								lftp -p $port -u "$username","$password" -e "set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 								fi
 							lftp -p $port -u "$username","$password" -e "set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
@@ -819,8 +819,8 @@ do
 					maxdl=$sfdl_wget_multithreads
 				fi
 				echo -n "${#filearray[@]}|$maxdl" > $sfdl_logs/dl.txt
-				if [ proxy == true ]; then
-						if [ proxyauth == true ]; then
+				if [ $proxy == true ]; then
+						if [ $proxyauth == true ]; then
 							lftp -p $port -u "$username","$password" -e 'set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
 							fi
 					lftp -p $port -u "$username","$password" -e 'set ftp:proxy $proxytyp://$proxyip:$proxyport; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
