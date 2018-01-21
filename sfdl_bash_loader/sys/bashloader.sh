@@ -823,9 +823,9 @@ do
 				echo -n "${#filearray[@]}|$maxdl" > $sfdl_logs/dl.txt
 				if [ $proxy == true ]; then
 						if [ $proxyauth == true ]; then
-							lftp -p $port -u "$username","$password" -e 'set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+							lftp -p $port -u "$username","$password" -e 'set ftp:proxy "'$proxytyp'"://"'$proxyuser'":"'$proxypass'"@"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
 							else
-					lftp -p $port -u "$username","$password" -e 'set ftp:proxy $proxytyp://$proxyip:$proxyport; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+					lftp -p $port -u "$username","$password" -e 'set ftp:proxy "'$proxytyp'"://"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
 							fi
 					else
 					lftp -p $port -u "$username","$password" -e 'set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
