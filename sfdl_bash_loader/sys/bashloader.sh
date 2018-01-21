@@ -269,6 +269,10 @@ fi
 # haben wir sfdl files?
 for sfdl in "$sfdl_files"/*.sfdl
 do
+	if [ $uscript_befor == true ]; then
+	"$uscript_folder"/"$uscript_name"
+	echo "Script" "$uscript_name" "wird ausgeführt"
+	fi
 	if [ -f "$sfdl" ]; then
 		# dieses sfdl files wird gerade verarbeitet
 		ladesfdl="${sfdl##*/}"
@@ -1069,6 +1073,10 @@ do
 				printText "SFDL:" "verschiebe ${sfdl##*/}"
 				mv "$sfdl" "$sfdl_downloads/$name/$name.sfdl"
 			fi
+		fi
+		if [ $uscript_after == true ]; then
+		"$uscript_folder"/"$uscript_name"
+		echo "Script" "$uscript_name" "wird ausgeführt"
 		fi
 
 		# xrel.to - tmdb.org mod
