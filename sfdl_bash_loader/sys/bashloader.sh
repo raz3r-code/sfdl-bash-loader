@@ -270,7 +270,7 @@ fi
 for sfdl in "$sfdl_files"/*.sfdl
 do
 	if [ $uscript_befor == true ]; then
-	"$uscript_folder"/"$uscript_name"
+	"$uscript_folder"/"$uscript_name1"
 	echo "Script" "$uscript_name" "wird ausgeführt"
 	fi
 	if [ -f "$sfdl" ]; then
@@ -1075,7 +1075,7 @@ do
 			fi
 		fi
 		if [ $uscript_after == true ]; then
-		"$uscript_folder"/"$uscript_name"
+		"$uscript_folder"/"$uscript_name2"
 		echo "Script" "$uscript_name" "wird ausgeführt"
 		fi
 
@@ -1281,5 +1281,8 @@ if [ `ls -a "$sfdl_files"/*.sfdl 2>/dev/null | wc -l` != 0 ] ; then
 	exit 0
 else
 	printText "Alle Download abgeschlossen"	
+	if [ $uscript_end == true ]; then
+	"$uscript_folder"/"$uscript_name3"
+	echo "Script" "$uscript_name" "wird ausgeführt"
 	exit 0
 fi
