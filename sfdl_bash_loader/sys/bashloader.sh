@@ -803,6 +803,8 @@ do
                 if [ ${#filearray[@]} -eq 0 ]; then
                     printErr "Leeres (filearray) Array: Keine Dateien gefunden!"
                     printErr "Kein Download moeglich, wird uebersprungen..."
+		    mkdir -p "$sfdl_files"/error
+		    mv "$sfdl" "$sfdl_files"/error/$name.sfdl		    
                     continue
                 fi
 
