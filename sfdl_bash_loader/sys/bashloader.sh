@@ -1306,5 +1306,6 @@ else
 	if [ $uscript_end == true ]; then
 	"$uscript_folder"/"$uscript_name3"
 	echo "Script" "$uscript_name3" "wird ausgeführt"
+	fi
 	exit 0
 fi
