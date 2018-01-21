@@ -346,12 +346,12 @@ do
 					printText "Lade Index (lftp):" "$ladepfad"
 					if [ $proxy == true ]; then
 						if [ $proxyauth == true ]; then
-							lftp -p $port -u "$username","$password" -e "set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 							else
-					lftp -p $port -u "$username","$password" -e "set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 							fi
 					else
-					lftp -p $port -u "$username","$password" -e "set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 					fi
 					if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
 						printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
@@ -615,12 +615,12 @@ do
 							printText "Lade Index (lftp):" "$ladepfad"
 						if [ $proxy == true ]; then
 							if [ $proxyauth == true ]; then
-							lftp -p $port -u "$username","$password" -e "set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 							else
-					lftp -p $port -u "$username","$password" -e "set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 							fi
 						else
-							lftp -p $port -u "$username","$password" -e "set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 							fi
 							if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                                 		printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
@@ -825,12 +825,12 @@ do
 				echo -n "${#filearray[@]}|$maxdl" > $sfdl_logs/dl.txt
 				if [ $proxy == true ]; then
 						if [ $proxyauth == true ]; then
-							lftp -p $port -u "$username","$password" -e 'set ftp:proxy "'$proxytyp'"://"'$proxyuser'":"'$proxypass'"@"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+							lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:proxy "'$proxytyp'"://"'$proxyuser'":"'$proxypass'"@"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
 							else
-					lftp -p $port -u "$username","$password" -e 'set ftp:proxy "'$proxytyp'"://"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+					lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:proxy "'$proxytyp'"://"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
 							fi
 					else
-					lftp -p $port -u "$username","$password" -e 'set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+					lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
 					fi
 			else
 				printErr "Es wurde kein lftp gefunden! Bitte lftp installieren!"
