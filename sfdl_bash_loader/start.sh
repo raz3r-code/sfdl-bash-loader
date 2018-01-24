@@ -315,19 +315,34 @@ if [ "${#installTools[@]}" != 0 ]; then
 	else
 		echo "| -------------------------------------- "
 		echo "| Alle Pakete installiert!"
+		echo "| Prüfe ausführbarkeit!"
+        	if [[ -x "$pwd/sys/bashloader.sh" ]]
+                        then
+                                echo "| Files are executable"
+                        else
+                                echo "| File are not executable or found"
+                                chmod +x -R "$pwd/sys"
+                                echo "| Files are now executable"
+                fi
 		echo "| Starte BASH-Loader in 5 Sekunden ..."
-		
-		echo 1 > "$pwd/sys/setup.txt"
+                echo 1 > "$pwd/sys/setup.txt"
 		sleep 5
 		exec "$pwd/sys/bashloader.sh"
 	fi
 else
 	echo "| -------------------------------------- "
 	echo "| Alle Pakete installiert!"
-	echo "| Starte BASH-Loader in 5 Sekunden ..."
-	
-	echo 1 > "$pwd/sys/setup.txt"
-	sleep 5
-	exec "$pwd/sys/bashloader.sh"
+        echo "| Prüfe ausführbarkeit!"
+        	if [[ -x "$pwd/sys/bashloader.sh" ]]
+                        then
+                                echo "| Files are executable"
+                        else
+                                echo "| File are not executable or found"
+                                chmod +x -R "$pwd/sys"
+                                echo "| Files are now executable"
+                fi
+                echo "| Starte BASH-Loader in 5 Sekunden ..."
+                echo 1 > "$pwd/sys/setup.txt"
+		sleep 5
+                exec "$pwd/sys/bashloader.sh"
 fi
-
