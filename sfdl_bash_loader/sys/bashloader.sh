@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==========================================================================================================
-# SFDL BASH-Loader - liebevoll gescripted von GrafSauger und raz3r
+# SFDL BASH-Loader - fork by Xenophanes. Original von GrafSauger und raz3r
 # ==========================================================================================================
 # 888888b.         d8888  .d8888b.  888    888        888                            888
 # 888  "88b       d88888 d88P  Y88b 888    888        888                            888
@@ -12,7 +12,7 @@
 # 8888888P" d88P     888  "Y8888P"  888    888        88888888 "Y88P"  "Y888888  "Y88888  "Y8888  888
 # ==========================================================================================================
 # sfdl bash loader version
-sfdl_version="3.11"
+sfdl_version="4.0x"
 
 IFSDEFAULT=$IFS
 
@@ -229,7 +229,7 @@ if [ $sfdl_logo == true ]; then
 			clear
 		fi
 	if [ $sfdl_color_text == true ]; then
-		echo $'\e[1;33;40m''===[SFDL BASH-Loader '$sfdl_version' (GrafSauger,raz3r)]==========================================================='
+		echo $'\e[1;33;40m''===[SFDL BASH-Loader '$sfdl_version' (Xenophanes)]==========================================================='
 		rand=$(((RANDOM % 5) + 1))
 		if [ $rand = 1 ]
 		then
@@ -253,16 +253,16 @@ if [ $sfdl_logo == true ]; then
 		echo -e "                                                                                                         "
 		echo $'\e[1;33;40m'=========================================================================================================$'\e[1;39;49m'
 	else
-		echo -e "===[SFDL BASH-Loader $sfdl_version (GrafSauger,raz3r)]============================================================="
+		echo -e "===[SFDL BASH-Loader $sfdl_version (Xenophanes)]============================================================="
 		cat "$sfdl_sys/logo.txt"
 		echo -e "                                                                                                         "
 		echo -e "========================================================================================================="
 	fi
 else
 	if [ $sfdl_color_text == true ]; then
-		echo $'\e[44m''==[SFDL BASH-Loader v$sfdl_version (GrafSauger,raz3r)]=='$'\e[49m'
+		echo $'\e[44m''==[SFDL BASH-Loader v$sfdl_version (Xenophanes)]=='$'\e[49m'
 	else
-		echo -e "==[SFDL BASH-Loader v$sfdl_version (GrafSauger,raz3r)]=="
+		echo -e "==[SFDL BASH-Loader v$sfdl_version (Xenophanes)]=="
 	fi
 fi
 
@@ -366,7 +366,6 @@ do
 						while IFS='' read -r line || [[ -n "$line" ]]; do
 							if [[ "$line" != d* ]]
 							then
-								#fixxed by raz3r
 								byte=0
 								if [ $sysname == "Darwin" ]; then
 									may_byte="$(echo $line | cut -d ' ' -f 3)"
@@ -635,7 +634,6 @@ do
 								while IFS='' read -r line || [[ -n "$line" ]]; do
 									if [[ "$line" != d* ]]
 									then
-										#fixxed by raz3r
 										byte=0
 										if [ $sysname == "Darwin" ]; then
 											may_byte="$(echo $line | cut -d ' ' -f 3)"
