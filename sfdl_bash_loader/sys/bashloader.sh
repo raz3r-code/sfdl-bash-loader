@@ -964,7 +964,7 @@ do
 				echo  >> "$sfdl_downloads/$name/speedreport.txt"
 				echo Kommentar: Danke! >> "$sfdl_downloads/$name/speedreport.txt"
 				if [ $sfdl_eigenwerbung == true ]; then
-					echo -e "[SIZE=1]Powered by [url=http://sfdl.net/bash-loader/]SFDL BASH-Loader[/url] $sfdl_version[/SIZE]" >> "$sfdl_downloads/$name/speedreport.txt"
+					echo -e "[SIZE=1]Powered by [url=https://github.com/JobbeDeluxe/sfdl-bash-loader]SFDL BASH-Loader[/url] $sfdl_version[/SIZE]" >> "$sfdl_downloads/$name/speedreport.txt"
 				fi
 			fi
 		else
