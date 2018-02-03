@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==========================================================================================================
-# SFDL BASH-Loader - Installer - liebevoll gescripted von GrafSauger und raz3r
+# SFDL BASH-Loader - fork by Xenophanes. Original von GrafSauger und raz3r
 # ==========================================================================================================
 # 888888b.         d8888  .d8888b.  888    888        888                            888                  
 # 888  "88b       d88888 d88P  Y88b 888    888        888                            888                  
