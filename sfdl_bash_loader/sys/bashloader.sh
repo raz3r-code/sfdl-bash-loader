@@ -1304,9 +1304,9 @@ if [ `ls -a "$sfdl_files"/*.sfdl 2>/dev/null | wc -l` != 0 ] ; then
 	exec "$pwd/bashloader.sh"
 	exit 0
 else
-	printText "Alle Download abgeschlossen"
-	echo "Script" "$uscript_name1" "wird ausgeführt, bitte warten"	
+	printText "Alle Download abgeschlossen"	
 	if [ $uscript_end == true ]; then
+	echo "Script" "$uscript_name1" "wird ausgeführt, bitte warten"	
 	"$uscript_folder"/"$uscript_name3"
 	echo "Script" "$uscript_name3" "wurde ausgeführt"
 	fi
