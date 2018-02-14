@@ -270,8 +270,9 @@ fi
 for sfdl in "$sfdl_files"/*.sfdl
 do
 	if [ $uscript_befor == true ]; then
+		echo "Userscript wird ausgeführt. Bitte warten...."
 		"$uscript_folder"/before.sh
-		echo "Userscript wird ausgeführt"
+		echo "Userscript wurde ausgeführt"
 	fi
 	
 	if [ -f "$sfdl" ]; then
@@ -1077,8 +1078,9 @@ do
 		fi
 
 		if [ $uscript_after == true ]; then
+			echo "Userscript wird ausgeführt. Bitte warten...."
 			"$uscript_folder"/after.sh
-			echo "Userscript wird ausgeführt"
+			echo "Userscript wurde ausgeführt"
 		fi
 		
 		# xrel.to - tmdb.org mod
@@ -1282,6 +1284,10 @@ if [ `ls -a "$sfdl_files"/*.sfdl 2>/dev/null | wc -l` != 0 ] ; then
 	exec "$pwd/bashloader.sh"
 	exit 0
 else
-	printText "Alle Download abgeschlossen"	
+	printText "Alle Download abgeschlossen"
+	if [ $uscript_end == true ]; then
+			echo "Userscript wird ausgeführt. Bitte warten...."
+			"$uscript_folder"/end.sh
+			echo "Userscript wurde ausgeführt"
 	exit 0
 fi
