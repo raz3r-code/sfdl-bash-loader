@@ -1289,5 +1289,6 @@ else
 			echo "Userscript wird ausgeführt. Bitte warten...."
 			"$uscript_folder"/end.sh
 			echo "Userscript wurde ausgeführt"
+	fi
 	exit 0
 fi
