@@ -270,11 +270,10 @@ fi
 for sfdl in "$sfdl_files"/*.sfdl
 do
 	if [ $uscript_befor == true ]; then
-		echo "Userscript wird ausgeführt. Bitte warten...."
-		"$uscript_folder"/before.sh
-		echo "Userscript wurde ausgeführt"
+	echo "Script" "$uscript_name1" "wird ausgeführt, bitte warten"
+	"$uscript_folder"/"$uscript_name1"
+	echo "Script" "$uscript_name1" "wurde ausgeführt"
 	fi
-	
 	if [ -f "$sfdl" ]; then
 		# dieses sfdl files wird gerade verarbeitet
 		ladesfdl="${sfdl##*/}"
@@ -346,8 +345,15 @@ do
 
 					ladepfad="${i##*/}"
 					printText "Lade Index (lftp):" "$ladepfad"
-
-					lftp -p $port -u "$username","$password" -e "set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+					if [ $proxy == true ]; then
+						if [ $proxyauth == true ]; then
+							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							else
+					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							fi
+					else
+					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+					fi
 					if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
 						printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
                                                 printErr "$ladesfdl wird uebersprungen!"
@@ -361,7 +367,6 @@ do
 						while IFS='' read -r line || [[ -n "$line" ]]; do
 							if [[ "$line" != d* ]]
 							then
-								#fixxed by raz3r
 								byte=0
 								if [ $sysname == "Darwin" ]; then
 									may_byte="$(echo $line | cut -d ' ' -f 3)"
@@ -608,8 +613,15 @@ do
 							
 							ladepfad="${i##*/}"
 							printText "Lade Index (lftp):" "$ladepfad"
-
-							lftp -p $port -u "$username","$password" -e "set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+						if [ $proxy == true ]; then
+							if [ $proxyauth == true ]; then
+							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							else
+					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							fi
+						else
+							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							fi
 							if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                                 		printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
                                                 		printErr "$ladesfdl wird uebersprungen!"
@@ -623,7 +635,6 @@ do
 								while IFS='' read -r line || [[ -n "$line" ]]; do
 									if [[ "$line" != d* ]]
 									then
-										#fixxed by raz3r
 										byte=0
 										if [ $sysname == "Darwin" ]; then
 											may_byte="$(echo $line | cut -d ' ' -f 3)"
@@ -791,6 +802,8 @@ do
                 if [ ${#filearray[@]} -eq 0 ]; then
                     printErr "Leeres (filearray) Array: Keine Dateien gefunden!"
                     printErr "Kein Download moeglich, wird uebersprungen..."
+		    mkdir -p "$sfdl_files"/error
+		    mv "$sfdl" "$sfdl_files"/error/$name.sfdl		    
                     continue
                 fi
 
@@ -809,7 +822,15 @@ do
 					maxdl=$sfdl_wget_multithreads
 				fi
 				echo -n "${#filearray[@]}|$maxdl" > $sfdl_logs/dl.txt
-				lftp -p $port -u "$username","$password" -e 'set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+				if [ $proxy == true ]; then
+						if [ $proxyauth == true ]; then
+							lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:proxy "'$proxytyp'"://"'$proxyuser'":"'$proxypass'"@"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+							else
+					lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:proxy "'$proxytyp'"://"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+							fi
+					else
+					lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+					fi
 			else
 				printErr "Es wurde kein lftp gefunden! Bitte lftp installieren!"
 				printLinie
@@ -944,7 +965,7 @@ do
 				echo  >> "$sfdl_downloads/$name/speedreport.txt"
 				echo Kommentar: Danke! >> "$sfdl_downloads/$name/speedreport.txt"
 				if [ $sfdl_eigenwerbung == true ]; then
-					echo -e "[SIZE=1]Powered by [url=https://github.com/raz3r-code/sfdl-bash-loader/releases]SFDL BASH-Loader[/url] $sfdl_version[/SIZE]" >> "$sfdl_downloads/$name/speedreport.txt"
+					echo -e "[SIZE=1]Powered by [url=https://github.com/JobbeDeluxe/sfdl-bash-loader]SFDL BASH-Loader[/url] $sfdl_version[/SIZE]" >> "$sfdl_downloads/$name/speedreport.txt"
 				fi
 			fi
 		else
@@ -1076,13 +1097,12 @@ do
 				mv "$sfdl" "$sfdl_downloads/$name/$name.sfdl"
 			fi
 		fi
-
 		if [ $uscript_after == true ]; then
-			echo "Userscript wird ausgeführt. Bitte warten...."
-			"$uscript_folder"/after.sh
-			echo "Userscript wurde ausgeführt"
+		echo "Script" "$uscript_name1" "wird ausgeführt, bitte warten"
+		"$uscript_folder"/"$uscript_name2"
+		echo "Script" "$uscript_name2" "wurde ausgeführt"
 		fi
-		
+
 		# xrel.to - tmdb.org mod
 		if [ $rar_error == false ]; then
 			if [ $sfdl_xrel_tmdb_mod == true ]; then
@@ -1284,10 +1304,11 @@ if [ `ls -a "$sfdl_files"/*.sfdl 2>/dev/null | wc -l` != 0 ] ; then
 	exec "$pwd/bashloader.sh"
 	exit 0
 else
-	printText "Alle Download abgeschlossen"
+	printText "Alle Download abgeschlossen"	
 	if [ $uscript_end == true ]; then
-			echo "Userscript wird ausgeführt. Bitte warten...."
-			"$uscript_folder"/end.sh
-			echo "Userscript wurde ausgeführt"
+	echo "Script" "$uscript_name1" "wird ausgeführt, bitte warten"	
+	"$uscript_folder"/"$uscript_name3"
+	echo "Script" "$uscript_name3" "wurde ausgeführt"
+	fi
 	exit 0
 fi
