@@ -3,8 +3,8 @@
 Zum einfachen herunterladen mit SFDL Dateien unter Linux und Mac
 
 ## Installation
-Auspacken: tar xvzf sfdl_bash_loader_vX.X.tar.gz  
-Ins Verzeichnis wechseln: cd sfdl_bash_loader  
+Auspacken: unzip sfdl-bash-loader-X.X.zip
+Ins Verzeichnis wechseln: cd sfdl-bash-loader-X.X/sfdl_bash_loader  
 Download starten: ./start.sh  
 
 ## Kompatibilität (getestet)
