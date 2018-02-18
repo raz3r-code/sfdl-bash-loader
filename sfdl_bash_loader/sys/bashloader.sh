@@ -14,9 +14,12 @@
 # sfdl bash loader version
 sfdl_version="3.11"
 
+# pfad definieren
 IFSDEFAULT=$IFS
 
-# pfad definieren
+# strg-c abfangen um entpacken&verschieben zu verhindern
+trap 'exit' INT
+
 # osx: kann nun auch unter mac osx mit doppelklick vom desktop aus gestartet werden
 osxcheck=$(uname)
 if [ $osxcheck == "Darwin" ]; then
