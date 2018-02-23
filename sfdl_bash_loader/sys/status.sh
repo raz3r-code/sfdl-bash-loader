@@ -1,346 +1,201 @@
 #!/bin/bash
 
+dltime1=$(date +"%s" 2>/dev/null)
+
 # pfad definieren und config laden
-pwd=$1
+pwd=$3
 
-# loader basispfad
-ppwd="$(dirname "$pwd")"
+files_arr=("${@}")
+files_arr=("${files_arr[@]:1}")
+files_arr=("${files_arr[@]:1}")
+files_arr=("${files_arr[@]:1}")
 
+# lade config
 source $pwd/loader.cfg
-loaderVersion=$(cat "$sfdl_logs/version.txt" 2>/dev/null)
-
-# php test
-USEPHP=0
-if hash php-cgi 2>/dev/null; then
-	USEPHP=1
+	
+dlname="${1##*/}"
+resumedl=0
+if [ -f "$sfdl_logs/$dlname.txt" ]; then
+	resumedl=1
+	resumetime=$(cat "$sfdl_logs/$dlname.txt")
 fi
 
-# mac os x check
-osxcheck=$(uname)
-if [ $osxcheck == "Darwin" ]; then
-	netcatcmd="nc"
-else
-	#netcatcmd="$sfdl_sys/netcat"
-	netcatcmd="nc.openbsd"
-fi
+files_max="$(cat "$sfdl_logs/dl.txt" | cut -d '|' -f1)"
+files_mt="$(cat "$sfdl_logs/dl.txt" | cut -d '|' -f2)"
+loader_version="$(cat "$sfdl_logs/version.txt")"
+	
+# systemname ... Linux, Darwin, ...
+sysnameX=$(uname)
 
-urldecode() {
-    local url_encoded="${1//+/ }"
-    printf '%b' "${url_encoded//%/\\x}"
+downloaded="0"
+progM=$(($2 / 1024))
+
+function printText {
+	if [ $sfdl_color_text == true ]; then
+		echo -ne $'\e[40;38;5;82m' $1 $'\e[97m'$2 $'\e[0m\r'
+	else
+		echo -ne  $1 $' ' $2 $'\r'
+	fi
 }
 
-HTMLTMP=/tmp/webresp
-PAGETEMP=/tmp/webtmp
-[ -p $HTMLTMP ] || mkfifo $HTMLTMP
+function printDone {
+	if [ $sfdl_color_text == true ]; then
+		echo -ne $'\e[40;38;5;13m' $1 $'\e[97m'$2 $'\e[0m\n'
+	else
+		echo -ne  $1 $' ' $2 $'\n'
+	fi
+}
 
-while true; do
-	( cat $HTMLTMP ) | $netcatcmd -lkv $sfld_status_webserver_port 2> "$sfdl_logs/status.log" | (
-		
-		REQ=()
-		IFS=$'\r\n'
-		REQ=`while read LINE && [ "$LINE" ] ; do echo "$LINE" ; done`
-		IFS=$'\n' read -rd '' -a REQ <<<"$REQ"
-		
-		chk="$(echo ${REQ[0]} | grep -Eo '^[^ ]+')"
-		get="${REQ[0]#GET }"
-		post="${REQ[0]#POST }"
-		
-		# post oder get
-		if [ "$chk" == "GET" ]; then
-			url="${get% HTTP/*}"
-		else
-			url="${post% HTTP/*}"
+function joinMe { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+
+while [ : ]
+do
+	name_chmod="$1"; echo ${var// /\ }
+	chmod -R $sfdl_chmod "$name_chmod"
+	if [ $sysnameX == "Darwin" ]
+	then
+		progB="$(du -k $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1 2>/dev/null)"
+	elif [ $sysnameX == "FreeBSD" ]
+	then
+		progB="$(du -k $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1 2>/dev/null)"
+	else
+		progB="$(du $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1 2>/dev/null)"
+	fi
+	progH="$(du -h $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1)"
+	downloaded=$(bc -l <<< "$progB/$progM*100" 2>/dev/null | cut -d "." -f 1 2>/dev/null)
+	dltime2=$(date +"%s" 2>/dev/null)
+	dltime=$(expr $dltime2 - $dltime1 2>/dev/null)
+	
+	if [ "$resumedl" == "1" ]; then
+		dltime=$((dltime+resumetime))
+	fi
+
+	dltime_eta=$(bc -l <<< "($progM-$progB)/($progB/$dltime)" 2>/dev/null)
+	
+	if [ $sysnameX == "Darwin" ]
+	then
+		speedtimeX=$(date -u -r $dltime +%T 2>/dev/null)
+		speedtime_eta=$(date -u -r $dltime_eta +%T 2>/dev/null)
+
+	elif [ $sysnameX == "FreeBSD" ]
+	then
+		speedtimeX=$(date -u -r $dltime +%T 2>/dev/null)
+		speedtime_eta=$(date -u -r $dltime_eta +%T 2>/dev/null)
+	else
+		speedtimeX=$(date -u -d @${dltime} +"%T" 2>/dev/null)
+		speedtime_eta=$(date -u -d @${dltime_eta} +"%T" 2>/dev/null)
+	fi
+
+	mbsecf=$(bc -l <<< "$progB/$dltime/1024" 2>/dev/null)
+	mbsec=${mbsecf:0:4}
+	
+	# speichere aktuelle dltime in temp logs, sollte der dl abgebrochen und fortgesetzt werden
+	echo $dltime > "$sfdl_logs/$dlname.txt"
+	
+	DATETIME=`date +'%d.%m.%Y - %H:%M:%S'`
+	JSDATE=`date -u +"%FT%T.000Z"`
+	
+	# datei updates
+	FILES=()
+	IFS=$'\r\n'
+	if [ $sysnameX == "Darwin" ]; then
+		FILES=`find $1 -type f -exec du -k -a {} + | sort -n`
+	else
+		FILES=`find $1 -type f -exec du -B1 -a {} + | sort -n`
+	fi
+	IFS=$'\n' read -rd '' -a FILES <<<"$FILES"
+
+	FILESARR=()	
+	for i in "${FILES[@]}";
+	do
+		regEx="([0-9]*)(.*)"
+		if [[ "$i" =~ $regEx ]]; then
+			f_size=${BASH_REMATCH[1]};
+			if [ $sysnameX == "Darwin" ]; then
+				f_size=$(bc -l <<< "$f_size*1024" 2>/dev/null)
+			fi
+			f_name="${BASH_REMATCH[2]##*/}"
+			FILESARR+=($(echo "$f_name|$f_size"))
 		fi
-		
-		# server logs
-		cip=$(tail -1 "$sfdl_logs/status.log" | cut -d'[' -f 2 | cut -d']' -f 1)
-		echo "$cip [`date '+%d-%m-%Y %H:%M:%S'`] ${REQ[0]}" >> "$sfdl_logs/verbindungen.log" 2>&1
-		
-		# default page
-		if [ "$url" == "/" ]
-		then
-			if [ -f "$sfdl_status/index.html" ]; then
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: text/html; charset=utf-8\r\n' >> $PAGETEMP
-				cat "$sfdl_status/index.html" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			else
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"url\":\"error\", \"msg\":\"$sfdl_status/index.html nicht gefunden!\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
+	done
+	
+	FLISTARR=()
+	for i in "${files_arr[@]}";
+	do
+		added=0
+		c_name="$(echo $i | cut -d '|' -f 1)"
+		c_size="$(echo $i | cut -d '|' -f 2)"
+		for m in "${FILESARR[@]}";
+		do
+			m_name="$(echo $m | cut -d '|' -f 1)"
+			m_size="$(echo $m | cut -d '|' -f 2)"
+			
+			if [ "$c_name" == "$m_name" ]; then
+				FLISTARR+=($(echo "$c_name|$c_size|$m_size"))
+				added=1
 			fi
-		# upload sfdl file
-		elif [ "$url" == "/file" ]
-		then
-			uppcnt=0
-			linecnt=0
-			filename=""
-			filename2=""
-			extension=""
-			timout=$sfdl_status_timout
-			timeSTART=$(date +"%s" 2>/dev/null)
-			isTIMEOUT=0
-			while read i
-			do
-				findFilename="$(echo $i | grep -oE 'Content-Disposition: form-data; name=\"sfdl\"; filename=\"(.*)\"')"
-				if [ ! -z "$findFilename" ]; then
-					regEx="Content-Disposition: form-data; name=\"sfdl\"; filename=\"((.*))\""
-					if [[ "$i" =~ $regEx ]]; then
-						filename=${BASH_REMATCH[1]};
-						
-						# ist es wirklich eine sfdl datei?
-						filename2=$(basename "$filename")
-						extension="${filename2##*.}"
-						if [ "$extension" != "sfdl" ] && [ "$extension" != "SFDL" ]; then
-							echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-							echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-							echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"upload\":\"fail\", \"sfdl\":\"$filename\" } ] }" >> $PAGETEMP
-							cat $PAGETEMP > $HTMLTMP
-							break
-						fi
-					fi
-				fi
-				
-				# anfang der sfdl datei
-				findStart="$(echo $i | grep -oE '(.*)xml version=(.*)')"
-				if [ ! -z "$findStart" ]; then
-					if [ "$findStart" == "$i" ]; then
-						uppcnt=$((uppcnt + 1))
-					fi
-				fi
-				
-				# sfdl datei erstellen
-				if [ $uppcnt == 1 ]; then
-					if [ ! -z "$i" ]; then
-						if [ $linecnt == 0 ]; then
-							echo "$i" > "$sfdl_files/$filename"
-						else
-							echo "$i" >> "$sfdl_files/$filename"
-						fi
-						linecnt=$((linecnt + 1))
-					fi
-				fi
-				
-				# ende des sfld files
-				if [ "</SFDLFile>" == "$i" ]; then
-					uppcnt=$((uppcnt + 1))
-				fi
-				
-				# ende des uploads
-				if [ $uppcnt -gt 1 ]; then
-					break
-				fi
-				
-				# timeout
-				timeNOW=$(date +"%s" 2>/dev/null)
-				timeOUT=$(expr $timeNOW - $timeSTART 2>/dev/null)
-				if [ $timeOUT -gt $timout ]; then
-					isTIMEOUT=1
-					break
-				fi
-				
-			done
-			
-			#echo -e 'HTTP/1.1 200 OK\r\n' > $HTMLTMP
-			
-			if [ $uppcnt == 2 ] && [ $linecnt != 0 ]; then
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"upload\":\"ok\", \"sfdl\":\"$filename\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			else
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"upload\":\"fail\", \"sfdl\":\"$filename\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			fi
-
-		# status json
-		elif [ "$url" == "/status.json" ]
-		then
-			if [ -f "$sfdl_status/status.json" ]; then
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				cat "$sfdl_status/status.json" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			else
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"json\":\"error\", \"msg\":\"status.json nicht gefunden: $sfdl_status/status.json\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			fi
-			
-		# start sfdl loader
-		elif [[ "$url" == /start* ]]
-		then
-			command="$(echo -n "$url" | sed 's/\/start\///' | tr -d '[[:space:]]')"
-			
-			if [ "$sfdl_status_start_passwort" == "$command" ]; then
-				exec "$sfdl_bdir/start.sh" &
-				
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"start\":\"ok\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			else
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"start\":\"Falsches Passwort!\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			fi
-			
-		# stop sfdl loader
-		elif [[ "$url" == /stop* ]]
-		then
-			command="$(echo -n "$url" | sed 's/\/stop\///' | tr -d '[[:space:]]')"
-			
-			if [ "$sfdl_status_stop_passwort" == "$command" ]; then
-				pkill -f bashloader.sh
-				pkill -f prog.sh
-				pkill -f wget
-				
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"stop\":\"ok\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			else
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"stop\":\"Falsches Passwort!\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			fi
-		
-		# kill webserver
-		elif [[ "$url" == /kill* ]]
-		then
-			command="$(echo -n "$url" | sed 's/\/kill\///' | tr -d '[[:space:]]')"
-			
-			if [ "$sfdl_status_kill_passwort" == "$command" ]; then
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"kill\":\"ok\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-				sleep 1
-				pkill -f status.sh
-			else
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"kill\":\"Falsches Passwort!\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			fi
-		
-		# sfdl datei mit ftp link
-		elif [[ "$url" == /addftp* ]]
-		then
-			command="$(echo -n "$url" | sed 's/\/addftp\///' | tr -d '[[:space:]]')"
-			
-			upFTPlink=""
-			
-			chkFTPlink1="$(echo $command | grep -oE 'ftp://(.*):(.*)@[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}/(.*)')"
-			if [ ! -z "$chkFTPlink1" ]; then
-				upFTPlink="$chkFTPlink1"
-			fi
-			
-			chkFTPlink2="$(echo $command | grep -oE 'ftp://[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}/(.*)')"
-			if [ ! -z "$chkFTPlink2" ]; then
-				upFTPlink="$chkFTPlink2"
-			fi
-			
-			chkFTPlink3="$(echo $command | grep -oE 'ftp://[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/(.*)')"
-			if [ ! -z "$chkFTPlink3" ]; then
-				upFTPlink="$chkFTPlink3"
-			fi
-			
-			upFTPlink="$(urldecode "$upFTPlink")"
-			
-			if [ ! -z "$upFTPlink" ]; then
-				cleanurl="${upFTPlink%/}" # entfernt das letzte slash
-				cleanname="${cleanurl##*/}" # spuckt alles nach dem letzten slash kommt aus
-				base64sting="$(echo -n "$upFTPlink" | base64)" # ftp url 2 base64
-				
-				exec wget -q -t $sfdl_wget_max_retry --retry-connrefused --content-disposition -N -P "$sfdl_files" "http://download.sfdl.net/$base64sting" &
-				
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"status\":\"ok\", \"msg\":\"$cleanname.sfdl\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			else
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"status\":\"error\", \"msg\":\"Kein FTP Link erkannt!\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			fi
-		
-		# sfdl upload von url
-		elif [[ "$url" == /upload* ]]
-		then
-			download="$(echo -n "$url" | sed 's/\/upload\///' | tr -d '[[:space:]]')"
-			exec wget -q -t $sfdl_wget_max_retry --retry-connrefused --content-disposition -N -P "$sfdl_files" "$download" &
-			
-			# download von sfdl.net?
-			chkSFDLnet="$(echo $download | grep -oE 'download.sfdl.net')"
-			if [ ! -z "$chkSFDLnet" ]; then
-				base64sting="$(echo -n "$download" | sed 's/http:\/\/download.sfdl.net\///' | tr -d '[[:space:]]' | base64 --decode)"
-				cleanurl="${base64sting%/}" # entfernt das letzte slash
-				cleanname="${cleanurl##*/}" # spuckt alles nach dem letzten slash kommt aus
-				
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"upload\":\"ok\", \"sfdl\":\"$cleanname.sfdl\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			else
-				echo -e 'HTTP/1.1 200 OK' > $PAGETEMP
-				echo -e 'Content-Type: application/json\r\n' >> $PAGETEMP
-				echo -e "{ \"BASHLoader\" : [ { \"version\":\"$loaderVersion\", \"upload\":\"ok\", \"sfdl\":\"$download\" } ] }" >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			fi
-		
-		# sonstiges
-		else
-			filename=$(basename "$url") # dateiname
-			extension="${filename##*.}" # dateiendung
-			
-			#echo "filename: $filename"
-			#echo "extension: $extension"
-			#echo "url: $url"
-			
-			chkURL="$(echo $url | grep -oE 'php?')"
-			if [ ! -z "$chkURL" ]; then
-				basefile="$(echo $url | cut -d '?' -f1)"
-				echo "basefile: $basefile"
-				
-				#baseextension="$(echo $extension | cut -d '?' -f1)"
-				baseextension="${basefile##*.}"
-				echo "baseextension: $baseextension"
-				
-				thisfile="$sfdl_status$basefile"
-				thisextension="$baseextension"
-			else
-				thisfile="$sfdl_status$url"
-				thisextension="$extension"
-			fi
-			
-			if [ -f "$thisfile" ]; then
-				if [ "$thisextension" == "php" ] && [ $USEPHP == 1 ]; then
-					HEADER="HTTP/1.1 200 OK\r\n"
-					PHPOUT=`php-cgi -c "$sfdl_status_php_ini_path" "$sfdl_status_doc_root$url" 2>/dev/null`
-					OUTPUT="$HEADER$PHPOUT"
-					echo "$OUTPUT" > $HTMLTMP
-				else
-					cat "$sfdl_status$url" > $HTMLTMP
-				fi
-			else
-				echo -e 'HTTP/1.1 404 Not Found' > $PAGETEMP
-				echo -e 'Content-Type: text/html; charset=utf-8\r\n' >> $PAGETEMP
-				echo -e '<html><head><title>404 - BASH-Loader</title></head><body><h1>404 - Seite nicht gefunden!</h1></body></html>' >> $PAGETEMP
-				cat $PAGETEMP > $HTMLTMP
-			fi
+		done
+		if [ $added == 0 ]; then
+			FLISTARR+=($(echo "$c_name|$c_size|NULL"))
+			added=0
 		fi
-		
-		<<EOF
+	done
+	
+	files_json="$(joinMe ";" "${FLISTARR[@]}")"
+	
+	echo -ne "{ \"BASHLoader\" : [ { \"version\":\"$loader_version\", \"date\":\"$JSDATE\", \"datetime\":\"$DATETIME\", \"status\":\"running\", \"sfdl\":\"$dlname.sfdl\", \"action\":\"loading\", \"loading_mt_files\":\"$files_mt\", \"loading_total_files\":\"$files_max\", \"loading\":\"$progH|$progB|$progM|$downloaded|$mbsec|$speedtimeX|$speedtime_eta\", \"loading_file_array\":\"$files_json\" } ] }" > "$sfdl_status_json_file"
 
-EOF
-		
-	)
+	if [[ "$downloaded" -le "9" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [----------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "10" && "$downloaded" -lt "20" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#---------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "20" && "$downloaded" -lt "30" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [##--------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "30" && "$downloaded" -lt "40" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [###-------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "40" && "$downloaded" -lt "50" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [####------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "50" && "$downloaded" -lt "60" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#####-----] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "60" && "$downloaded" -lt "70" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [######----] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "70" && "$downloaded" -lt "80" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#######---] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "80" && "$downloaded" -lt "90" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [########--] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "90" && "$downloaded" -lt "99" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#########-] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	if [[ "$downloaded" -ge "99" && "$downloaded" -lt "100" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [##########] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	fi
+	
+	# wenn der download komplett ist: beenden
+	if [[ "$downloaded" == "100" ]]; then
+		printDone "Wird geladen:" "$progH ($progB KB / $progM KB) [##########] $downloaded% ($mbsec MB/s) [$speedtimeX]/[00:00:00]"
+		sleep 1
+		break
+	fi
+	
+	# schlafen
+	sleep 5
 done
