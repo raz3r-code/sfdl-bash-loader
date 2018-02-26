@@ -1101,12 +1101,6 @@ do
 				mv "$sfdl" "$sfdl_downloads/$name/$name.sfdl"
 			fi
 		fi
-
-		if [ $uscript_after == true ]; then
-			echo "Userscript wird ausgeführt. Bitte warten...."
-			"$uscript_folder"/after.sh
-			echo "Userscript wurde ausgeführt"
-		fi
 		
 		# xrel.to - tmdb.org mod
 		if [ $rar_error == false ]; then
@@ -1287,7 +1281,12 @@ do
 		printLinie
 
 		printJSON "done" "NULL"
-
+		
+		if [ $uscript_after == true ]; then
+			echo "Userscript wird ausgeführt. Bitte warten...."
+			"$uscript_folder"/after.sh
+			echo "Userscript wurde ausgeführt"
+		fi
 	else
 		if [ "$WEBSERVER" == "ONLINE" ]; then
 			printText "Webinterface ONLINE:" "http://$MYIP:$sfld_status_webserver_port"
