@@ -5,7 +5,7 @@ Zum einfachen herunterladen mit SFDL Dateien unter Linux und Mac
 ## Installation
 
 ```
-wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/update-test/sfdl_bash_loader/update.sh -v -O update.sh && ./update.sh install; rm -rf update.sh
+wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh && ./update.sh install; rm -rf update.sh
 ```
 
 #### Alternativ:
