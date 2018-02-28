@@ -9,11 +9,20 @@ wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/update-test/s
 ```
 
 #### Alternativ:
-Auspacken: unzip sfdl-bash-loader-X.X.zip
-Ins Verzeichnis wechseln: cd sfdl-bash-loader-X.X/sfdl_bash_loader  
+Auspacken: 
+```
+unzip sfdl-bash-loader-X.X.zip
+```
+Ins Verzeichnis wechseln: 
+```
+cd sfdl-bash-loader-X.X/sfdl_bash_loader  
+```
 
 ## Starten
-Download starten: ./start.sh  
+Download starten: 
+```
+./start.sh
+```
 
 ## Kompatibilität (getestet)
 -Linux  
