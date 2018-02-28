@@ -790,11 +790,19 @@ do
 
 		# speedreport erstellen?
 		do_speedreport=true
-		if [ $sfdl_wget_download == true ]; then
+		if [ $sfdl_wget_download == true ] || [ $sfdl_lftp_download == true ]; then
 			dltimeX1=$(date +"%s" 2>/dev/null)
 			if [ -z "dltime1" ]; then
 				printErr "Es wird kein Speedreport erstellt, da - date - keine Antwort gab!"
 				do_speedreport=false
+			fi
+			
+			resumedl=0
+			resumetime=0
+			if [ -f "$sfdl_logs/$name.txt" ]; then
+				resumedl=1
+				resumetime=$(cat "$sfdl_logs/$name.txt")
+				rm -f "$sfdl_logs/$name.txt"
 			fi
 		fi
 
@@ -897,6 +905,7 @@ do
 				rm -f "$sfdl_logs/$name"_download.log
 				rm -f "$sfdl_logs/dl.txt"
 				rm -f "$sfdl_logs/version.txt"
+				rm -f "$sfdl_logs/$name.txt"
 			fi
 			if [ $sfdl_wget_download == true ]; then
 				printText "Logs:" "Entferne Logfiles (wget)"
@@ -904,6 +913,7 @@ do
 				rm -f "$sfdl_downloads/$name/".listing
 				rm -f "$sfdl_logs/dl.txt"
 				rm -f "$sfdl_logs/version.txt"
+				rm -f "$sfdl_logs/$name.txt"
 			fi
 		fi
 
@@ -913,13 +923,7 @@ do
 			#zeit fuer speedreport
 			dltimeX2=$(date +"%s")
 			#berechne vergangene sekunden
-			dltime=$(expr $dltimeX2 - $dltimeX1 2>/dev/null)
-			resumedl=0
-			if [ -f "$sfdl_logs/$name.txt" ]; then
-				resumedl=1
-				resumetime=$(cat "$sfdl_logs/$name.txt")
-				rm -f "$sfdl_logs/$name.txt"
-			fi
+			dltimeX=$(expr $dltimeX2 - $dltimeX1 2>/dev/null)
 			if [ "$resumedl" == "1" ]; then
 				dltimeX=$((dltimeX+resumetime))
 			fi
