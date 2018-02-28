@@ -145,93 +145,53 @@ do
 	
 	echo -ne "{ \"BASHLoader\" : [ { \"version\":\"$loader_version\", \"date\":\"$JSDATE\", \"datetime\":\"$DATETIME\", \"status\":\"running\", \"sfdl\":\"$dlname.sfdl\", \"action\":\"loading\", \"loading_mt_files\":\"$files_mt\", \"loading_total_files\":\"$files_max\", \"loading\":\"$progH|$progB|$progM|$downloaded|$mbsec|$speedtimeX|$speedtime_eta\", \"loading_file_array\":\"$files_json\" } ] }" > "$sfdl_status_json_file"
 
-	if [[ "$downloaded" -le "4" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#--------------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -le "9" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [----------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "5" && "$downloaded" -lt "10" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [##-------------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "10" && "$downloaded" -lt "20" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#---------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "10" && "$downloaded" -lt "15" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [###------------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "20" && "$downloaded" -lt "30" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [##--------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "15" && "$downloaded" -lt "20" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [####-----------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "30" && "$downloaded" -lt "40" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [###-------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "20" && "$downloaded" -lt "25" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#####----------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "40" && "$downloaded" -lt "50" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [####------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "25" && "$downloaded" -lt "30" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [######---------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "50" && "$downloaded" -lt "60" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#####-----] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "30" && "$downloaded" -lt "35" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#######--------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "60" && "$downloaded" -lt "70" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [######----] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "35" && "$downloaded" -lt "40" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [########-------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "70" && "$downloaded" -lt "80" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#######---] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "40" && "$downloaded" -lt "45" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#########------------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "80" && "$downloaded" -lt "90" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [########--] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
-	if [[ "$downloaded" -ge "45" && "$downloaded" -lt "50" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [##########-----------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "50" && "$downloaded" -lt "55" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [###########----------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "55" && "$downloaded" -lt "60" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [############---------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "60" && "$downloaded" -lt "65" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#############--------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "65" && "$downloaded" -lt "70" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [##############-------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "70" && "$downloaded" -lt "75" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [###############------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "75" && "$downloaded" -lt "80" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [################-----] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "80" && "$downloaded" -lt "85" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#################----] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "85" && "$downloaded" -lt "90" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [##################---] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "90" && "$downloaded" -lt "95" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [###################--] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
-	fi
-	
-	if [[ "$downloaded" -ge "95" && "$downloaded" -lt "99" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [####################-] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+	if [[ "$downloaded" -ge "90" && "$downloaded" -lt "99" ]]; then
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#########-] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
 	if [[ "$downloaded" -ge "99" && "$downloaded" -lt "100" ]]; then
-		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [#####################] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
+		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [##########] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
 	
 	# wenn der download komplett ist: beenden
 	if [[ "$downloaded" == "100" ]]; then
-		printDone "Wird geladen:" "$progH ($progB KB / $progM KB) [#####################] $downloaded% ($mbsec MB/s) [$speedtimeX]/[00:00:00]"
+		printDone "Wird geladen:" "$progH ($progB KB / $progM KB) [##########] $downloaded% ($mbsec MB/s) [$speedtimeX]/[00:00:00]"
 		sleep 1
 		break
 	fi
