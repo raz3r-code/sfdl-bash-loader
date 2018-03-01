@@ -11,6 +11,47 @@
 # 888   d88P d8888888888 Y88b  d88P 888    888        888     Y88..88P 888  888 Y88b 888 Y8b.     888     
 # 8888888P" d88P     888  "Y8888P"  888    888        88888888 "Y88P"  "Y888888  "Y88888  "Y8888  888      
 # ==========================================================================================================
+version_repo=0
+version_local=0
+url_repoversion="https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/sys/logs/version.txt"
+
+
+#gibt es ein update
+checkupdate()
+{
+#immer update wenn keine config da
+sfdl_update=true
+
+# lade config für update frage
+if [ -f "$pwd/sys/loader.cfg" ]; then
+	source "$pwd/sys/loader.cfg"
+fi
+
+version_repo=$(wget -q -O - "$@" $url_repoversion | cut -d"." -f2)
+version_local=$(cat "./sys/logs/version.txt" | cut -d"." -f2)
+if ! [ $sfdl_update = false ]; then 
+	if [ $(($version_local)) -lt $(($version_repo)) ]; then
+		echo "| Updates verfügbar"
+	
+		#frage nach update
+		if [ $sfdl_update = ask ]; then
+			read -p"! Aktualisieren (j/n)? " response
+			if [ "$response" == "j" ]; then
+				sfdl_update=true
+			else
+				sfdl_update=false
+			fi
+		fi 
+	
+		#update starten
+		if [ $sfdl_update = true ]; then
+			exec "$pwd/update.sh"
+		fi
+	else
+		echo "| Keine Updates verfügbar"
+	fi
+fi
+}
 
 status=`ps aux | grep [-i] 'bashloader.sh' 2> /dev/null | wc -l | tr -d '[[:space:]]'`
 if [ "$status" -gt 0 ]; then
@@ -32,9 +73,12 @@ else
 fi
 
 if [ -f "$pwd/sys/setup.txt" ]; then
+	echo "Starte..."
+	checkupdate
 	exec "$pwd/sys/bashloader.sh"
 	exit 0
 fi
+
 
 # macht das bild sauber
 clear
@@ -43,6 +87,8 @@ echo "| -------------------------------------- "
 echo "| BASH-Loader Installer"
 echo "| -------------------------------------- "
 echo "| system: $osxcheck"
+
+
 
 # ==========================================================================================================
 # haben wir alle tools?
@@ -315,34 +361,42 @@ if [ "${#installTools[@]}" != 0 ]; then
 	else
 		echo "| -------------------------------------- "
 		echo "| Alle Pakete installiert!"
+		
 		echo "| Prüfe ausführbarkeit!"
-        	if [[ -x "$pwd/sys/bashloader.sh" ]]
-                        then
-                                echo "| Files are executable"
-                        else
-                                echo "| File are not executable or found"
-                                chmod +x -R "$pwd/sys"
-                                echo "| Files are now executable"
-                fi
+        if [[ -x "$pwd/sys/bashloader.sh" ]]; then
+			echo "| Files are executable"
+		else
+			echo "| File are not executable or found"
+			chmod +x -R "$pwd/sys"
+			echo "| Files are now executable"
+		fi
+		
+		echo "| Prüfe auf Updates..."
+		checkupdate
+		
 		echo "| Starte BASH-Loader in 5 Sekunden ..."
-                echo 1 > "$pwd/sys/setup.txt"
+        echo 1 > "$pwd/sys/setup.txt"
 		sleep 5
 		exec "$pwd/sys/bashloader.sh"
 	fi
 else
 	echo "| -------------------------------------- "
 	echo "| Alle Pakete installiert!"
-        echo "| Prüfe ausführbarkeit!"
-        	if [[ -x "$pwd/sys/bashloader.sh" ]]
-                        then
-                                echo "| Files are executable"
-                        else
-                                echo "| File are not executable or found"
-                                chmod +x -R "$pwd/sys"
-                                echo "| Files are now executable"
-                fi
-                echo "| Starte BASH-Loader in 5 Sekunden ..."
-                echo 1 > "$pwd/sys/setup.txt"
-		sleep 5
-                exec "$pwd/sys/bashloader.sh"
+	
+    echo "| Prüfe ausführbarkeit!"
+	if [[ -x "$pwd/sys/bashloader.sh" ]]; then
+		echo "| Files are executable"
+	else
+        echo "| File are not executable or found"
+		chmod +x -R "$pwd/sys"
+		echo "| Files are now executable"
+	fi
+	
+	echo "| Prüfe auf Updates..."
+	checkupdate
+	
+	echo "| Starte BASH-Loader in 5 Sekunden ..."
+	echo 1 > "$pwd/sys/setup.txt"
+	sleep 5
+	exec "$pwd/sys/bashloader.sh"
 fi
