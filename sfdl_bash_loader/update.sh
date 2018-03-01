@@ -17,6 +17,7 @@ first_install=false
 url_repoversion="https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/sys/logs/version.txt"
 url_repodownload="https://github.com/raz3r-code/sfdl-bash-loader/trunk/sfdl_bash_loader/"
 
+
 status=`ps aux | grep [-i] 'bashloader.sh' 2> /dev/null | wc -l | tr -d '[[:space:]]'`
 if [ "$status" -gt 0 ]; then
     echo "[`date`] : BASH-Loader wird bereits ausgefuehrt! [pid: $status]"
@@ -97,13 +98,16 @@ chkTools()
 loaderupdate()
 {
 echo "| -------------------------------------- "
+
+#hole versionsnummern
 version_repo=$(wget -q -O - "$@" $url_repoversion | cut -d"." -f2)
-if [ $first_install = false ]; then
-	echo "| Installiert Version: 3.$version_local"
-fi
 
 if [ -f "$pwd/sys/logs/version.txt" ]; then
 	version_local=$(cat "./sys/logs/version.txt" | cut -d"." -f2)
+fi
+
+if [ $first_install = false ]; then
+	echo "| Installiert Version: 3.$version_local"
 fi
 
 echo "| Aktuelle Version:    3.$version_repo"
