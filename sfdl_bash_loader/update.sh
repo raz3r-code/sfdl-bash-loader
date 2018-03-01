@@ -119,8 +119,8 @@ if [ $(($version_local)) -lt $(($version_repo)) ]; then
 	if [ -d "$pwd/sys" ]; then
 		echo "| Konfiguration speichern..."
 		mkdir "$pwd/backup/"
-		cp -rf "$pwd/sys/userscript backup/userscript/"
-		cp -rf "$pwd/sys/loader.cfg backup/loader.cfg"
+		cp -rf "$pwd/sys/userscript" "$pwd/backup/userscript/"
+		cp -rf "$pwd/sys/loader.cfg" "$pwd/backup/loader.cfg"
 	fi
 	rm -rf "$pwd/sys/"
 	rm -rf "$pwd/start.sh"
@@ -139,8 +139,8 @@ if [ $(($version_local)) -lt $(($version_repo)) ]; then
 	
 	if [ -d "$pwd/backup" ]; then
 		echo "| Konfiguration wiederherstellen..."
-		cp -rf "$pwd/backup/userscript sys/userscript/"
-		cp -rf "$pwd/backup/loader.cfg sys/loader.cfg"
+		cp -rf "$pwd/backup/userscript" "$pwd/sys/userscript/"
+		cp -rf "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg"
 		rm -rf "$pwd/backup/"
 	fi
 	
