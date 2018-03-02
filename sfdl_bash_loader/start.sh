@@ -35,12 +35,37 @@ if ! [ $sfdl_update = false ]; then
 	
 		#frage nach update
 		if [ $sfdl_update = ask ]; then
-			read -p"! Aktualisieren (j/n)? " response
-			if [ "$response" == "j" ]; then
-				sfdl_update=true
-			else
-				sfdl_update=false
-			fi
+			while true
+			do
+				read -t 60 -r -p "Update Durchführen? Abbruch in 60 Sekunden automatisch [J/n] " input
+				case $input in
+    				[yY][eE][sS]|[yY]|[Jj][Aa]|[Jj])
+ 					echo -e "\033[34mOk\033[0m"
+					sfdl_update=true
+					sleep 2
+					break
+ 					;;
+ 
+    				[nN][oO]|[nN]|[Nn][Ee][Ii][Nn])
+ 					echo -e "\033[31mAbbruch\033[0m"
+					sfdl_update=false
+					sleep 2
+					break
+       					;;
+ 
+    				'')
+ 					echo "Kein Eingabe Gefunden.....Ich warte nicht ewig!"
+ 					sfdl_update=false
+					sleep 5
+					break
+					;;
+
+   	 			*)
+ 					echo -e "\033[31mFalsche Eingabe...'$input'\033[0m"
+ 					;;
+
+				esac
+				done
 		fi 
 	
 		#update starten
