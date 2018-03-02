@@ -30,7 +30,7 @@ fi
 version_repo=$(wget -q -O - "$@" $url_repoversion | cut -d"." -f2)
 
 if [ -f "$pwd/sys/log/version.txt" ]; then
-	version_local=$(cat "./sys/logs/version.txt" | cut -d"." -f2)
+	version_local=$(cat "$pwd/sys/logs/version.txt" | cut -d"." -f2)
 else
 	sfdl_update=false
 fi
