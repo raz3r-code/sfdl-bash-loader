@@ -361,13 +361,13 @@ if [ "${#installTools[@]}" != 0 ]; then
 	else
 		echo "| -------------------------------------- "
 		echo "| Alle Pakete installiert!"
-		
 		echo "| Prüfe ausführbarkeit!"
         if [[ -x "$pwd/sys/bashloader.sh" ]]; then
 			echo "| Files are executable"
 		else
 			echo "| File are not executable or found"
 			chmod +x -R "$pwd/sys"
+			chmod +x ""$pwd/update.sh"
 			echo "| Files are now executable"
 		fi
 		
@@ -382,13 +382,13 @@ if [ "${#installTools[@]}" != 0 ]; then
 else
 	echo "| -------------------------------------- "
 	echo "| Alle Pakete installiert!"
-	
-    echo "| Prüfe ausführbarkeit!"
+	echo "| Prüfe ausführbarkeit!"
 	if [[ -x "$pwd/sys/bashloader.sh" ]]; then
 		echo "| Files are executable"
 	else
         echo "| File are not executable or found"
 		chmod +x -R "$pwd/sys"
+		chmod +x ""$pwd/update.sh"
 		echo "| Files are now executable"
 	fi
 	
