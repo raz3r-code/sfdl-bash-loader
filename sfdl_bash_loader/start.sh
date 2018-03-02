@@ -28,7 +28,13 @@ if [ -f "$pwd/sys/loader.cfg" ]; then
 fi
 
 version_repo=$(wget -q -O - "$@" $url_repoversion | cut -d"." -f2)
-version_local=$(cat "./sys/logs/version.txt" | cut -d"." -f2)
+
+if [ -f "$pwd/sys/logs/version.txt" ]; then
+	version_local=$(cat "$pwd/sys/logs/version.txt" | cut -d"." -f2)
+else
+	sfdl_update=false
+fi
+
 if ! [ $sfdl_update = false ]; then 
 	if [ $(($version_local)) -lt $(($version_repo)) ]; then
 		echo "| Updates verfügbar"
