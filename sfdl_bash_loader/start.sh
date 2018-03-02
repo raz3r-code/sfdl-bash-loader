@@ -392,7 +392,7 @@ if [ "${#installTools[@]}" != 0 ]; then
 		else
 			echo "| File are not executable or found"
 			chmod +x -R "$pwd/sys"
-			chmod +x ""$pwd/update.sh"
+			chmod +x "$pwd/update.sh"
 			echo "| Files are now executable"
 		fi
 		
@@ -413,7 +413,7 @@ else
 	else
         echo "| File are not executable or found"
 		chmod +x -R "$pwd/sys"
-		chmod +x ""$pwd/update.sh"
+		chmod +x "$pwd/update.sh"
 		echo "| Files are now executable"
 	fi
 	
