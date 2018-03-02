@@ -165,7 +165,7 @@ fi
 
 echo "| Starte BASH-Loader in 5 Sekunden ..."
 sleep 5
-exec "$pwd/sys/bashloader.sh"
+exec "$pwd/start.sh"
 }
 
 chkTools
