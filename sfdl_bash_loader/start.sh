@@ -82,7 +82,7 @@ if ! [ $sfdl_update = false ]; then
 			fi 
 			
 			#hole neues Update script
-			wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh
+			wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh 1> /dev/null
 			#neue update.sh da? sonst mit alte behalten!
 			if [ -f "$pwd/update.sh" ]; then
 				rm -rf "$pwd/update_old.sh"
