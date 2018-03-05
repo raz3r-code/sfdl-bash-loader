@@ -77,7 +77,7 @@ if ! [ $sfdl_update = false ]; then
 		#update starten
 		if [ $sfdl_update = true ]; then
 			#alte update.sh sichern
-			if [ -f "$pwd/update.sh" ]
+			if [ -f "$pwd/update.sh" ]; then
 				mv "$pwd/update.sh" "$pwd/update_old.sh"
 			fi 
 			
@@ -85,8 +85,9 @@ if ! [ $sfdl_update = false ]; then
 			wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh
 			
 			#neue update.sh da? sonst mit alte behalten!
-			if [ -f "$pwd/update.sh" ]
+			if [ -f "$pwd/update.sh" ]; then
 				rm -rf "$pwd/update_old.sh"
+				chmod +x "$pwd/update.sh"
 			else
 				mv "$pwd/update_old.sh" "$pwd/update.sh"
 			fi
