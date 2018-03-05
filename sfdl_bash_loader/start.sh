@@ -83,19 +83,51 @@ if ! [ $sfdl_update = false ]; then
 			
 			#hole neues Update script
 			wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh
-			
+			sleep 10
 			#neue update.sh da? sonst mit alte behalten!
 			if [ -f "$pwd/update.sh" ]; then
 				rm -rf "$pwd/update_old.sh"
 				chmod +x "$pwd/update.sh"
 			else
+				echo -e "\n\033[41mACHTUNG!!!\033[0m\n"
+				echo "Aktuelle Update Datei Konnte nicht geladen werden. Bitte später Säter noch mal versuchen, oder Manuell die Neue Version bei Github Laden."
+				echo "Update trozdem durchführen? Es kann zu einem unfolständigem Update führen und wird nicht empfohlen."
+				while true
+				do
+				read -t 30 -r -p "Update Fortsetzen? Abbruch in 30 Sekunden automatisch [J/n] " input
+ 
+				case $input in
+    				[yY][eE][sS]|[yY]|[Jj][Aa]|[Jj])
+	 			echo -e "\033[34mOk\033[0m"
 				mv "$pwd/update_old.sh" "$pwd/update.sh"
-			fi
-			
-			#go
-			exec "$pwd/update.sh"
-			
-			
+				break
+				;;
+ 
+    				[nN][oO]|[nN]|[Nn][Ee][Ii][Nn])
+ 				echo -e "\033[31mAbbruch\033[0m"
+				sfdl_update=false
+				mv "$pwd/update_old.sh" "$pwd/update.sh"
+				break
+				;;
+ 
+    				'')
+ 				echo "Kein Eingabe Gefunden. Abbruch"
+				sfdl_update=false
+				mv "$pwd/update_old.sh" "$pwd/update.sh"
+				break
+				;;
+
+    				*)
+ 				echo -e "\033[31mFalsche Eingabe...'$input'\033[0m"
+ 				;;
+
+				esac
+				done
+			fi			
+		fi
+		#go
+		if [ $sfdl_update = true ]; then
+				exec "$pwd/update.sh"
 		fi
 	else
 		echo "| Keine Updates verfügbar"
