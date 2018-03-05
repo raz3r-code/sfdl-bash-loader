@@ -83,7 +83,6 @@ if ! [ $sfdl_update = false ]; then
 			
 			#hole neues Update script
 			wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh
-			sleep 10
 			#neue update.sh da? sonst mit alte behalten!
 			if [ -f "$pwd/update.sh" ]; then
 				rm -rf "$pwd/update_old.sh"
