@@ -45,9 +45,9 @@ fi
 # macht das bild sauber
 
 clear
-echo "# =========================================================================================================="
+echo "# ======================================================================================================="
 echo "# SFDL BASH-Loader - Installer/Updater - raz3r"
-echo "# =========================================================================================================="
+echo "# ======================================================================================================="
 echo "| system: $osxcheck"
 
 chkTools()
@@ -121,6 +121,7 @@ if [ $(($version_local)) -lt $(($version_repo)) ]; then
 		mkdir "$pwd/backup/"
 		cp -rf "$pwd/sys/userscript" "$pwd/backup/userscript"
 		cp -rf "$pwd/sys/loader.cfg" "$pwd/backup/loader.cfg"
+		cp -rf "$pwd/sys/passwords.txt" "$pwd/backup/passwords.txt"
 	fi
 	rm -rf "$pwd/sys/"
 	rm -rf "$pwd/start.sh"
@@ -141,6 +142,7 @@ if [ $(($version_local)) -lt $(($version_repo)) ]; then
 		echo "| Konfiguration wiederherstellen..."
 		cp -rf "$pwd/backup/userscript" "$pwd/sys/"
 		cp -rf "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg"
+		cp -rf "$pwd/backup/passwords.txt" "$pwd/sys/passwords.txt"
 		rm -rf "$pwd/backup/"
 	fi
 	
