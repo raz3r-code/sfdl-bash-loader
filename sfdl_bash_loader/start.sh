@@ -43,7 +43,7 @@ if ! [ $sfdl_update = false ]; then
 		if [ $sfdl_update = ask ]; then
 			while true
 			do
-				read -t 60 -r -p "Update Durchführen? Abbruch in 60 Sekunden automatisch [J/n] " input
+				read -t 60 -r -p "Update durchführen? Abbruch in 60 Sekunden automatisch [J/n] " input
 				case $input in
     				[yY][eE][sS]|[yY]|[Jj][Aa]|[Jj])
  					echo -e "\033[34mOk\033[0m"
@@ -89,8 +89,8 @@ if ! [ $sfdl_update = false ]; then
 				chmod +x "$pwd/update.sh"
 			else
 				echo -e "\n\033[41mACHTUNG!!!\033[0m\n"
-				echo "Aktuelle Update Datei Konnte nicht geladen werden. Bitte später Säter noch mal versuchen, oder Manuell die Neue Version bei Github Laden."
-				echo "Update trozdem durchführen? Es kann zu einem unfolständigem Update führen und wird nicht empfohlen."
+				echo "Aktuelle Update Datei konnte nicht geladen werden. Bitte später später noch mal versuchen, oder Manuell die Neue Version bei Github Laden."
+				echo "Update trotzdem durchführen? Es kann zu einem unvollständigem Update führen und wird nicht empfohlen."
 				while true
 				do
 				read -t 30 -r -p "Update Fortsetzen? Abbruch in 30 Sekunden automatisch [J/n] " input
