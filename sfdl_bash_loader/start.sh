@@ -89,7 +89,7 @@ if ! [ $sfdl_update = false ]; then
 				chmod +x "$pwd/update.sh"
 			else
 				echo -e "\n\033[41mACHTUNG!!!\033[0m\n"
-				echo "Aktuelle Update Datei konnte nicht geladen werden. Bitte später später noch mal versuchen, oder Manuell die Neue Version bei Github Laden."
+				echo "Aktuelle Update Datei konnte nicht geladen werden. Bitte später noch mal versuchen, oder Manuell die Neue Version bei Github Laden."
 				echo "Update trotzdem durchführen? Es kann zu einem unvollständigem Update führen und wird nicht empfohlen."
 				while true
 				do
