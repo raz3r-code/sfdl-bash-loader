@@ -802,7 +802,6 @@ do
 			if [ -f "$sfdl_logs/$name.txt" ]; then
 				resumedl=1
 				resumetime=$(cat "$sfdl_logs/$name.txt")
-				rm -f "$sfdl_logs/$name.txt"
 			fi
 		fi
 
@@ -923,9 +922,11 @@ do
 			#zeit fuer speedreport
 			dltimeX2=$(date +"%s")
 			#berechne vergangene sekunden
-			dltimeX=$(expr $dltimeX2 - $dltimeX1 2>/dev/null)
+			dltime=$(expr $dltimeX2 - $dltimeX1 2>/dev/null)
 			if [ "$resumedl" == "1" ]; then
-				dltimeX=$((dltimeX+resumetime))
+				dltimeX=$((dltime + resumetime))
+			else
+				dltimeX=$((dltime))
 			fi
 			if [ $syscore == "darwin" ]; then
 				speedtime=$(date -u -r $dltimeX +%T 2>/dev/null)
