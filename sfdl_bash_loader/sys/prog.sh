@@ -140,6 +140,16 @@ do
 			added=0
 		fi
 	done
+	#Prüfe Downloadabbruch vom server
+if [ -f "$sfdl_logs/$name_download.log" ]; then
+				downlogok=`cat "$sfdl_logs/$name"_download.log | grep "Fehler"`
+				if [ -z "$downlogok" ] ; then
+					printErr "Download"
+				else
+					printErr "Download Fehler!"
+					exit 1
+				fi
+fi
 	
 	files_json="$(joinMe ";" "${FLISTARR[@]}")"
 	
