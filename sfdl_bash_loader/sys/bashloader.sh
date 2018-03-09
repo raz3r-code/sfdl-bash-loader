@@ -848,7 +848,13 @@ do
 				exit
 			fi
 		fi
-
+		if [ -f ""$sfdl_logs/$dlname"_abbruch.err" ]; then
+			printErr "Kein Download abschluss moeglich, wird uebersprungen..."
+			mkdir -p "$sfdl_files"/error
+			mv "$sfdl" "$sfdl_files"/error/$name.sfdl
+			rm ""$sfdl_logs/$dlname"_abbruch.err"
+                    	continue
+		fi
 		# wget download
 		# wget vorhanden?
 		if [ $sfdl_wget_download == true ]; then
