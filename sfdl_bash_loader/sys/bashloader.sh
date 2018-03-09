@@ -848,7 +848,7 @@ do
 				exit
 			fi
 		fi
-		if [ -f ""$sfdl_logs/$dlname"_abbruch.err" ]; then
+		if [ -f ""$sfdl_logs/$name"_abbruch.err" ]; then
 			printErr "Kein Download abschluss moeglich, wird uebersprungen..."
 			mkdir -p "$sfdl_files"/error
 			mv "$sfdl" "$sfdl_files"/error/$name.sfdl
