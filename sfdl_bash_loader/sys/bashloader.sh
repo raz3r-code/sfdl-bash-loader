@@ -852,7 +852,7 @@ do
 			printErr "Kein Download abschluss moeglich, wird uebersprungen..."
 			mkdir -p "$sfdl_files"/error
 			mv "$sfdl" "$sfdl_files"/error/$name.sfdl
-			rm ""$sfdl_logs/$dlname"_abbruch.err"
+			rm ""$sfdl_logs/$name"_abbruch.err"
                     	continue
 		fi
 		# wget download
