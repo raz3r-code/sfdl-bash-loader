@@ -203,6 +203,7 @@ if [ -f ""$sfdl_logs/$dlname"_download.log" ]; then
 	fi
 				else
 					echo "Download Fehler!"
+					touch ""$sfdl_logs/$dlname"_abbruch.err"
 					exit 1
 				fi
 fi
