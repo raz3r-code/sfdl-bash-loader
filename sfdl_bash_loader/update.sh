@@ -137,14 +137,45 @@ if [ $(($version_local)) -lt $(($version_repo)) ]; then
 		svn export "$url_repodownload"update.sh 1> /dev/null
 	fi 
 	
-	chmod +x start.sh
+	#mache ausführbar
+	chmod +x $pwd
 	
 	if [ -d "$pwd/backup" ]; then
 		echo "| Konfiguration wiederherstellen..."
 		cp -rf "$pwd/backup/userscript" "$pwd/sys/"
-		cp -rf "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg"
 		cp -rf "$pwd/backup/passwords.txt" "$pwd/sys/passwords.txt"
-		rm -rf "$pwd/backup/"
+		#cp -rf "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg"
+		
+		#--------------------------------------
+		# Überprüfe Config auf änderung
+		#--------------------------------------
+		
+		#hole diff und zeilen
+		diff "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg" > "$pwd/backup/loadercfg.diff"
+		ct_row=$(grep -c "" "$pwd/backup/loadercfg.diff")
+		
+		for i in `seq 1 $ct_row`;
+        do
+			change_beginn=$(grep -En "[[:digit:]]{1,3}c[[:digit:]]{1,3}" "$pwd/backup/loadercfg.diff")
+	
+			if ! [ -z $change_beginn ]; then
+				#change gefunden
+				change_end=$(grep -En "[[:digit:]]{1,3}a[[:digit:]]{1,3}|[[:digit:]]{1,3}d[[:digit:]]{1,3}" "$pwd/backup/loadercfg.diff")
+				row_change_beginn=$(echo $change_beginn | cut -c 1)
+				row_change_end=$(echo $change_end | cut -c 1)
+				row_change_end=$(echo "$row_change_end - 1" | bc)
+				sed -ie "$row_change_beginn"','"$row_change_end"'d' "$pwd/backup/loadercfg.diff"
+			fi 	
+				
+            #echo $i
+        done 
+		
+		#schreibe änderung in config
+		cp -rf "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg"
+		patch "$pwd/sys/loader.cfg" < "$pwd/backup/loadercfg.diff" 1> /dev/null 
+		
+		#lösche backup
+		#rm -rf "$pwd/backup/"
 	fi
 	
 	if ! [ -d "$pwd/sfdl" ]; then
