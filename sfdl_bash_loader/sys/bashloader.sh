@@ -361,6 +361,9 @@ do
 					if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
 						printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
                                                 printErr "$ladesfdl wird uebersprungen!"
+						ladeerr=$(cat "$sfdl_logs/$ladepfad"_lftp_error.log)
+						printErr "$ladeerr"
+						ladeerr=
                                                 printLinie
 						mkdir -p "$sfdl_files"/error
 						mv "$sfdl" "$sfdl_files"/error/$name.sfdl
@@ -630,6 +633,9 @@ do
 							if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                                 		printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
                                                 		printErr "$ladesfdl wird uebersprungen!"
+								ladeerr=$(cat "$sfdl_logs/$ladepfad"_lftp_error.log)
+								printErr "$ladeerr"
+								ladeerr=
                                                 		printLinie
 								mkdir -p "$sfdl_files"/error
                                                 		mv "$sfdl" "$sfdl_files"/error/$name.sfdl
