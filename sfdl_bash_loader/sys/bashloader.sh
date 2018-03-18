@@ -338,6 +338,19 @@ do
 				if [ -f "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                         rm -f "$sfdl_logs/$ladepfad"_lftp_error.log
                                 fi
+				# ping server
+				if ping -q -c 1 $host &> /dev/null
+				then
+					printText "PING:" "Server hat auf einen PING geantwortet!"
+				else
+					printErr "ERROR: Server $host hat auf PING nicht geantwortet! Neuer Versuch..."
+					if ping -q -c 5 $host &> /dev/null
+					then
+						printText "PING:" "Server $host hat nun erfogreich auf 5 PINGS geantwortet!"
+					else
+						printErr "ERROR: Server $host antwortet weiterhin auf keine PINGS! FTP online?"
+					fi
+				fi
 				# index mit lftp laden (rekursiv)
 				if [ $bpathArrCnt == 1 ]; then
 					sfdl_wget_download=false
@@ -609,7 +622,19 @@ do
 						if [ -f "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                                         rm -f "$sfdl_logs/$ladepfad"_lftp_error.log
                                                 fi
-
+						# ping server
+						if ping -q -c 1 $host &> /dev/null
+						then
+							printText "PING:" "Server hat auf einen PING geantwortet!"
+						else
+							printErr "ERROR: Server $host hat auf PING nicht geantwortet! Neuer Versuch..."
+							if ping -q -c 5 $host &> /dev/null
+							then
+								printText "PING:" "Server $host hat nun erfogreich auf 5 PINGS geantwortet!"
+							else
+								printErr "ERROR: Server $host antwortet weiterhin auf keine PINGS! FTP online?"
+							fi
+						fi
 						# index mit lftp laden (rekursiv)
 						if [ $bpathArrCnt == 1 ]; then
 							sfdl_wget_download=false
@@ -777,20 +802,6 @@ do
 				printErr "$sfdl wird uebersprungen!"
 				printLinie
 				continue
-			fi
-		fi
-
-		# ping server
-		if ping -q -c 1 $host &> /dev/null
-		then
-			printText "PING:" "Server hat auf einen PING geantwortet!"
-		else
-			printErr "ERROR: Server $host hat auf PING nicht geantwortet! Neuer Versuch..."
-			if ping -q -c 5 $host &> /dev/null
-			then
-				printText "PING:" "Server $host hat nun erfogreich auf 5 PINGS geantwortet!"
-			else
-				printErr "ERROR: Server $host antwortet weiterhin auf keine PINGS! FTP online?"
 			fi
 		fi
 
