@@ -571,7 +571,7 @@ do
 					printErr "$ladesfdl kann mit Passwort $aes_pass nicht entschluesselt werden!"
 					printErr "$ladesfdl wird uebersprungen!"
 					mkdir -p "$sfdl_files"/error
-					mv "$sfdl" "$sfdl_files"/error/$name.sfdl
+					mv "$sfdl" "$sfdl_files"/error/$ladesfd.sfdl
 					continue
 				else
 					if [ $addNewPass == "true" ]; then
