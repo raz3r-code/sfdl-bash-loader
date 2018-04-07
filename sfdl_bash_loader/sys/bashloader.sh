@@ -576,7 +576,7 @@ do
 					else
 						Passerror2="true"
 						printText "AES:" "Keines der Passwoerter war beim Entschluesseln hilfreich"
-						printErr "$ladesfdl kann mit Passwort $aes_pass nicht entschluesselt werden!"
+						printErr "$ladesfdl kann mit Passwortliste nicht entschluesselt werden!"
 						printErr "$ladesfdl wird uebersprungen!"
 						mkdir -p "$sfdl_files"/error
 						mv "$sfdl" "$sfdl_files"/error/$name.sfdl
