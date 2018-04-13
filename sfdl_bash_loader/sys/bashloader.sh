@@ -54,7 +54,7 @@ function aes128cbc {
 }
 function BruteForce {
 	while IFS='' read -r line || [[ -n "$line" ]]; do
-		serverip="$(aes128cbc "$line" "$1" | grep -E -o '([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})')"
+		serverip="$(aes128cbc "$line" "$1" | grep -E -o '\.([0-9,a-z,A-Z]{1,3})')"
 		if [ -n "$serverip" ]; then
 			echo $line
 			break
@@ -562,21 +562,32 @@ do
 				do
 					printJSON "running" "$ladesfdl" "Warte auf Passworteingabe"
 					read -p "Bitte Passwort eingeben: " aes_pass
+					echo -e "$aes_pass" >> "$sfdl_sys/passwords.txt"
 				done
 
 				# entschluesseln
-				host="$(aes128cbc "$aes_pass" "$host" | grep -E -o '([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})')"
-				# konnte host entschluesselt werden?
-				if [ -z "$host" ]; then
-					printErr "$ladesfdl kann mit Passwort $aes_pass nicht entschluesselt werden!"
-					printErr "$ladesfdl wird uebersprungen!"
-					continue
-				else
-					if [ $addNewPass == "true" ]; then
-						echo -e "$aes_pass" >> "$sfdl_sys/passwords.txt"
+				if [ addNewPass="true" ]; then
+					printText "AES:" "Versuche alle Passwoerter aus der Liste"
+					aes_pass="$(BruteForce "$host" "$sfdl_sys/passwords.txt")"
+					if [ -n "$aes_pass" ]; then
+						printText "AES:" "Passwort gefunden, entschluessle SFDL mit: $aes_pass"
+						Passerror2="false"
+					else
+						Passerror2="true"
+						printText "AES:" "Keines der Passwoerter war beim Entschluesseln hilfreich"
+						printErr "$ladesfdl kann mit Passwortliste nicht entschluesselt werden!"
+						printErr "$ladesfdl wird uebersprungen!"
+						mkdir -p "$sfdl_files"/error
+						mv "$sfdl" "$sfdl_files"/error/$ladesfdl.sfdl
+						continue
 					fi
+				else
+					printErr "Konnte keine Passworddatei finden, Rechte zum schreiben vorhanden?"
+					mkdir -p "$sfdl_files"/error
+					mv "$sfdl" "$sfdl_files"/error/$ladesfdl.sfdl
+					continue
 				fi
-
+				host="$(aes128cbc "$aes_pass" "$host")"
 				name="$(aes128cbc "$aes_pass" "$name")"
 				name="$(echo -n "$name" | sed 's/​//g')"
 				if [ -z "$name" ]; then
