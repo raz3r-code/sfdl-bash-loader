@@ -566,8 +566,7 @@ do
 				done
 
 				# entschluesseln
-				addNewPass="false"
-				if [ -f "$sfdl_sys/passwords.txt" ]; then
+				if [ addNewPass="true" ]; then
 					printText "AES:" "Versuche alle Passwoerter aus der Liste"
 					aes_pass="$(BruteForce "$host" "$sfdl_sys/passwords.txt")"
 					if [ -n "$aes_pass" ]; then
@@ -584,6 +583,9 @@ do
 					fi
 				else
 					printErr "Konnte keine Passworddatei finden, Rechte zum schreiben vorhanden?"
+					mkdir -p "$sfdl_files"/error
+					mv "$sfdl" "$sfdl_files"/error/$ladesfdl.sfdl
+					continue
 				fi
 				host="$(aes128cbc "$aes_pass" "$host")"
 				name="$(aes128cbc "$aes_pass" "$name")"
