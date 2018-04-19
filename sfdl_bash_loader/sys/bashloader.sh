@@ -570,6 +570,8 @@ do
 				if [ -z "$host" ]; then
 					printErr "$ladesfdl kann mit Passwort $aes_pass nicht entschluesselt werden!"
 					printErr "$ladesfdl wird uebersprungen!"
+					mkdir -p "$sfdl_files"/error
+					mv "$sfdl" "$sfdl_files"/error/$ladesfdl.sfdl
 					continue
 				else
 					if [ $addNewPass == "true" ]; then
