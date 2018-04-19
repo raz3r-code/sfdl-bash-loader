@@ -565,21 +565,21 @@ do
 				done
 
 				# entschluesseln
-				host="$(aes128cbc "$aes_pass" "$host" | grep -E -o '\.([0-9,a-z,A-Z]{1,3})')"
+				validdec="$(aes128cbc "$aes_pass" "$host" | grep -E -o '\.([0-9,a-z,A-Z]{1,3})')"
 				
 				# konnte host entschluesselt werden?
-				if [ -z "$host" ]; then
+				if [ -z "$validdec" ]; then
 					printErr "$ladesfdl kann mit Passwort $aes_pass nicht entschluesselt werden!"
 					printErr "$ladesfdl wird uebersprungen!"
 					mkdir -p "$sfdl_files"/error
-					mv "$sfdl" "$sfdl_files"/error/$ladesfdl.sfdl
+					mv "$sfdl" "$sfdl_files"/error/$ladesfdl
 					continue
 				else
 					if [ $addNewPass == "true" ]; then
 						echo -e "$aes_pass" >> "$sfdl_sys/passwords.txt"
 					fi
 				fi
-
+				host="$(aes128cbc "$aes_pass" "$host")"
 				name="$(aes128cbc "$aes_pass" "$name")"
 				name="$(echo -n "$name" | sed 's/​//g')"
 				if [ -z "$name" ]; then
