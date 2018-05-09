@@ -3,6 +3,7 @@ pwd='$pwd'
 ppwd='$pwd/..'
 source ./loader.cfg.new
 source ./loader.cfg.bak
+source ./force.cfg
 
 echo -e "debug=$debug						# debug true/false 
 sfdl_logo=$sfdl_logo						# ascii logo true/false
