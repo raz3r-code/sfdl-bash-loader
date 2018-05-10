@@ -470,6 +470,7 @@ else
         echo "| File are not executable or found"
 		chmod +x -R "$pwd/sys"
 		chmod +x "$pwd/update.sh"
+		chmod +x "$pwd/updatecfg.sh"
 		echo "| Files are now executable"
 	fi
 	
