@@ -1,9 +1,9 @@
 #!/bin/bash
 pwd='$pwd'
 ppwd='$pwd/..'
-source ./loader.cfg.new
-source ./loader.cfg.bak
-source ./force.cfg
+source "$1"     #./loader.cfg.new
+source "$2"	#./loader.cfg.bak
+source "$3"	#./force.cfg
 
 echo -e "debug=$debug						# debug true/false 
 sfdl_logo=$sfdl_logo						# ascii logo true/false
@@ -66,4 +66,4 @@ sfdl_status_stop_passwort=\"$sfdl_status_stop_passwort\"				# legt das passwort 
 sfdl_status_kill_passwort=\"$sfdl_status_kill_passwort\"			# legt das passwort zum remote beenden des webservers fest (UNBEDINGT AENDERN!!!)
 sfdl_status_timout=$sfdl_status_timout					# webserver timout
 sfdl_status_php_ini_path=\"$sfdl_status_php_ini_path\"				# pfad in der die php.ini abgelegt ist
-sfdl_status_doc_root=\"$sfdl_status_doc_root\"			# doc root - pfad zu den html/php usw files" >./loader.cfg
+sfdl_status_doc_root=\"$sfdl_status_doc_root\"			# doc root - pfad zu den html/php usw files" >"$4"
