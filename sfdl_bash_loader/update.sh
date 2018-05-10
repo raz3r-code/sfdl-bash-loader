@@ -121,7 +121,7 @@ if [ $(($version_local)) -lt $(($version_repo)) ]; then
 		echo "| Konfiguration speichern..."
 		mkdir "$pwd/backup/"
 		cp -rf "$pwd/sys/userscript" "$pwd/backup/userscript"
-		cp -rf "$pwd/sys/loader.cfg" "$pwd/backup/loader.cfg"
+		cp -rf "$pwd/sys/loader.cfg" "$pwd/backup/loader.cfg.bak"
 		cp -rf "$pwd/sys/passwords.txt" "$pwd/backup/passwords.txt"
 	fi
 	rm -rf "$pwd/sys/"
@@ -142,7 +142,9 @@ if [ $(($version_local)) -lt $(($version_repo)) ]; then
 	if [ -d "$pwd/backup" ]; then
 		echo "| Konfiguration wiederherstellen..."
 		cp -rf "$pwd/backup/userscript" "$pwd/sys/"
-		cp -rf "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg"
+		mv "$pwd/sys/loader.cfg" "$pwd/backup/loader.cfg.new"
+		"$pwd/updatecfg.sh" "$pwd/backup/loader.cfg.new" "$pwd/backup/loader.cfg.bak" "$pwd/force.cfg" "$pwd/sys/loader.cfg"
+		#cp -rf "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg"
 		cp -rf "$pwd/backup/passwords.txt" "$pwd/sys/passwords.txt"
 		rm -rf "$pwd/backup/"
 	fi
@@ -231,7 +233,6 @@ else
 	sleep 5
     loaderupdate
 fi
-
 
 
 
