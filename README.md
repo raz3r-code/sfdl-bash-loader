@@ -18,6 +18,11 @@ Ins Verzeichnis wechseln:
 cd sfdl-bash-loader-X.X/sfdl_bash_loader  
 ```
 
+Rechte vergeben:: 
+```
+sudo chmod +x ./start.sh 
+```
+
 ## Starten
 Download starten: 
 ```
