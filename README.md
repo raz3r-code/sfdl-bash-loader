@@ -18,7 +18,7 @@ Ins Verzeichnis wechseln:
 cd sfdl-bash-loader-X.X/sfdl_bash_loader  
 ```
 
-Rechte vergeben:: 
+Rechte vergeben: 
 ```
 sudo chmod +x ./start.sh 
 ```
