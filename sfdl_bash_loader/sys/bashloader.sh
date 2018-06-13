@@ -927,7 +927,6 @@ do
 				rm -f "$sfdl_logs/$name"_lftp.log
 				rm -f "$sfdl_logs/$name"_download.log
 				rm -f "$sfdl_logs/dl.txt"
-				rm -f "$sfdl_logs/version.txt"
 				rm -f "$sfdl_logs/$name.txt"
 			fi
 			if [ $sfdl_wget_download == true ]; then
@@ -935,7 +934,6 @@ do
 				rm -f "$sfdl_downloads/$name/"index.html*
 				rm -f "$sfdl_downloads/$name/".listing
 				rm -f "$sfdl_logs/dl.txt"
-				rm -f "$sfdl_logs/version.txt"
 				rm -f "$sfdl_logs/$name.txt"
 			fi
 		fi
