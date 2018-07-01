@@ -52,16 +52,24 @@ while [ : ]
 do
 	name_chmod="$1"; echo ${var// /\ }
 	chmod -R $sfdl_chmod "$name_chmod"
-	if [ $sysnameX == "Darwin" ]
-	then
-		progB="$(du -k $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1 2>/dev/null)"
-	elif [ $sysnameX == "FreeBSD" ]
-	then
-		progB="$(du -k $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1 2>/dev/null)"
-	else
-		progB="$(du $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1 2>/dev/null)"
-	fi
-	progH="$(du -h $1 2>/dev/null | cut -f1 2>/dev/null | tail -n 1)"
+	sizeB="$(find $1 -type f -printf '%s\n' | awk '{ total += $1 }; END { printf "%.0f",total }')"
+	if [ -z "$sizeB" ]
+                then
+                sizeB=0
+        fi
+        progB="$(awk 'BEGIN {printf "%.0f",'$sizeB'/1024}')"
+        sizeH1="$(awk 'BEGIN {printf "%.0f",'$sizeB'/1048576}')"
+        if [ $sizeH1 -ge 1000 ]
+                then
+                progH="$(awk 'BEGIN {printf "%.1f",'$sizeB'/1048576000}') GB"
+        elif [ $sizeH1 -ge 1 ]
+                then
+                progH="$(awk 'BEGIN {printf "%.0f",'$sizeB'/1048576}') MB"
+        else
+                progH="$(awk 'BEGIN {printf "%.0f",'$sizeB'/1024}') KB"
+
+        fi
+
 	downloaded=$(bc -l <<< "$progB/$progM*100" 2>/dev/null | cut -d "." -f 1 2>/dev/null)
 	dltime2=$(date +"%s" 2>/dev/null)
 	dltime=$(expr $dltime2 - $dltime1 2>/dev/null)
@@ -96,55 +104,57 @@ do
 	JSDATE=`date -u +"%FT%T.000Z"`
 	
 	# datei updates
-	FILES=()
-	IFS=$'\r\n'
-	if [ $sysnameX == "Darwin" ]; then
-		FILES=`find $1 -type f -exec du -k -a {} + | sort -n`
-	else
-		FILES=`find $1 -type f -exec du -B1 -a {} + | sort -n`
-	fi
-	IFS=$'\n' read -rd '' -a FILES <<<"$FILES"
-
-	FILESARR=()	
-	for i in "${FILES[@]}";
-	do
-		regEx="([0-9]*)(.*)"
-		if [[ "$i" =~ $regEx ]]; then
-			f_size=${BASH_REMATCH[1]};
-			if [ $sysnameX == "Darwin" ]; then
-				f_size=$(bc -l <<< "$f_size*1024" 2>/dev/null)
-			fi
-			f_name="${BASH_REMATCH[2]##*/}"
-			FILESARR+=($(echo "$f_name|$f_size"))
+	if [ $sfdl_status_webserver == true ]
+	then
+		FILES=()
+		IFS=$'\r\n'
+		if [ $sysnameX == "Darwin" ]; then
+			FILES=`find $1 -type f -exec du -k -a {} + | sort -n`
+		else
+			FILES=`find $1 -type f -exec du -B1 -a {} + | sort -n`
 		fi
-	done
+		IFS=$'\n' read -rd '' -a FILES <<<"$FILES"
 	
-	FLISTARR=()
-	for i in "${files_arr[@]}";
-	do
-		added=0
-		c_name="$(echo $i | cut -d '|' -f 1)"
-		c_size="$(echo $i | cut -d '|' -f 2)"
-		for m in "${FILESARR[@]}";
+		FILESARR=()	
+		for i in "${FILES[@]}";
 		do
-			m_name="$(echo $m | cut -d '|' -f 1)"
-			m_size="$(echo $m | cut -d '|' -f 2)"
-			
-			if [ "$c_name" == "$m_name" ]; then
-				FLISTARR+=($(echo "$c_name|$c_size|$m_size"))
-				added=1
+			regEx="([0-9]*)(.*)"
+			if [[ "$i" =~ $regEx ]]; then
+				f_size=${BASH_REMATCH[1]};
+				if [ $sysnameX == "Darwin" ]; then
+					f_size=$(bc -l <<< "$f_size*1024" 2>/dev/null)
+				fi
+				f_name="${BASH_REMATCH[2]##*/}"
+				FILESARR+=($(echo "$f_name|$f_size"))
 			fi
 		done
-		if [ $added == 0 ]; then
-			FLISTARR+=($(echo "$c_name|$c_size|NULL"))
+		
+		FLISTARR=()
+		for i in "${files_arr[@]}";
+		do
 			added=0
-		fi
-	done
-	
-	files_json="$(joinMe ";" "${FLISTARR[@]}")"
-	
-	echo -ne "{ \"BASHLoader\" : [ { \"version\":\"$loader_version\", \"date\":\"$JSDATE\", \"datetime\":\"$DATETIME\", \"status\":\"running\", \"sfdl\":\"$dlname.sfdl\", \"action\":\"loading\", \"loading_mt_files\":\"$files_mt\", \"loading_total_files\":\"$files_max\", \"loading\":\"$progH|$progB|$progM|$downloaded|$mbsec|$speedtimeX|$speedtime_eta\", \"loading_file_array\":\"$files_json\" } ] }" > "$sfdl_status_json_file"
-
+			c_name="$(echo $i | cut -d '|' -f 1)"
+			c_size="$(echo $i | cut -d '|' -f 2)"
+			for m in "${FILESARR[@]}";
+			do
+				m_name="$(echo $m | cut -d '|' -f 1)"
+				m_size="$(echo $m | cut -d '|' -f 2)"
+				
+				if [ "$c_name" == "$m_name" ]; then
+					FLISTARR+=($(echo "$c_name|$c_size|$m_size"))
+					added=1
+				fi
+			done
+			if [ $added == 0 ]; then
+				FLISTARR+=($(echo "$c_name|$c_size|NULL"))
+				added=0
+			fi
+		done
+		
+		files_json="$(joinMe ";" "${FLISTARR[@]}")"
+		
+		echo -ne "{ \"BASHLoader\" : [ { \"version\":\"$loader_version\", \"date\":\"$JSDATE\", \"datetime\":\"$DATETIME\", \"status\":\"running\", \"sfdl\":\"$dlname.sfdl\", \"action\":\"loading\", \"loading_mt_files\":\"$files_mt\", \"loading_total_files\":\"$files_max\", \"loading\":\"$progH|$progB|$progM|$downloaded|$mbsec|$speedtimeX|$speedtime_eta\", \"loading_file_array\":\"$files_json\" } ] }" > "$sfdl_status_json_file"
+	fi
 	if [[ "$downloaded" -le "9" ]]; then
 		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [----------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
