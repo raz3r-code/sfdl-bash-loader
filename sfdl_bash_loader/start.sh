@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==========================================================================================================
-# SFDL BASH-Loader - fork by Xenophanes. Original von GrafSauger und raz3r
+# SFDL BASH-Loader - Installer - liebevoll gescripted von GrafSauger und raz3r
 # ==========================================================================================================
 # 888888b.         d8888  .d8888b.  888    888        888                            888                  
 # 888  "88b       d88888 d88P  Y88b 888    888        888                            888                  
@@ -11,6 +11,128 @@
 # 888   d88P d8888888888 Y88b  d88P 888    888        888     Y88..88P 888  888 Y88b 888 Y8b.     888     
 # 8888888P" d88P     888  "Y8888P"  888    888        88888888 "Y88P"  "Y888888  "Y88888  "Y8888  888      
 # ==========================================================================================================
+version_repo=0
+version_local=0
+url_repoversion="https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/sys/logs/version.txt"
+
+
+#gibt es ein update
+checkupdate()
+{
+#immer update wenn keine config da
+sfdl_update=true
+
+# lade config für update frage
+if [ -f "$pwd/sys/loader.cfg" ]; then
+	source "$pwd/sys/loader.cfg"
+fi
+
+version_repo=$(wget -q -O - "$@" $url_repoversion | cut -d"." -f2)
+
+if [ -f "$pwd/sys/logs/version.txt" ]; then
+	version_local=$(cat "$pwd/sys/logs/version.txt" | cut -d"." -f2)
+else
+	sfdl_update=false
+fi
+
+if ! [ $sfdl_update = false ]; then 
+	if [ $(($version_local)) -lt $(($version_repo)) ]; then
+		echo "| Updates verfügbar"
+	
+		#frage nach update
+		if [ $sfdl_update = ask ]; then
+			while true
+			do
+				read -t 60 -r -p "Update durchführen? Abbruch in 60 Sekunden automatisch [J/n] " input
+				case $input in
+    				[yY][eE][sS]|[yY]|[Jj][Aa]|[Jj])
+ 					echo -e "\033[34mOk\033[0m"
+					sfdl_update=true
+					sleep 2
+					break
+ 					;;
+ 
+    				[nN][oO]|[nN]|[Nn][Ee][Ii][Nn])
+ 					echo -e "\033[31mAbbruch\033[0m"
+					sfdl_update=false
+					sleep 2
+					break
+       					;;
+ 
+    				'')
+ 					echo "Kein Eingabe Gefunden.....Ich warte nicht ewig!"
+ 					sfdl_update=false
+					sleep 5
+					break
+					;;
+
+   	 			*)
+ 					echo -e "\033[31mFalsche Eingabe...'$input'\033[0m"
+ 					;;
+
+				esac
+				done
+		fi 
+	
+		#update starten
+		if [ $sfdl_update = true ]; then
+			#alte update.sh sichern
+			if [ -f "$pwd/update.sh" ]; then
+				mv "$pwd/update.sh" "$pwd/update_old.sh"
+			fi 
+			
+			#hole neues Update script
+			wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh 1> /dev/null
+			#neue update.sh da? sonst mit alte behalten!
+			if [ -f "$pwd/update.sh" ]; then
+				rm -rf "$pwd/update_old.sh"
+				chmod +x "$pwd/update.sh"
+			else
+				echo -e "\n\033[41mACHTUNG!!!\033[0m\n"
+				echo "Aktuelle Update Datei konnte nicht geladen werden. Bitte später noch mal versuchen, oder Manuell die Neue Version bei Github Laden."
+				echo "Update trotzdem durchführen? Es kann zu einem unvollständigem Update führen und wird nicht empfohlen."
+				while true
+				do
+				read -t 30 -r -p "Update Fortsetzen? Abbruch in 30 Sekunden automatisch [J/n] " input
+ 
+				case $input in
+    				[yY][eE][sS]|[yY]|[Jj][Aa]|[Jj])
+	 			echo -e "\033[34mOk\033[0m"
+				mv "$pwd/update_old.sh" "$pwd/update.sh"
+				break
+				;;
+ 
+    				[nN][oO]|[nN]|[Nn][Ee][Ii][Nn])
+ 				echo -e "\033[31mAbbruch\033[0m"
+				sfdl_update=false
+				mv "$pwd/update_old.sh" "$pwd/update.sh"
+				break
+				;;
+ 
+    				'')
+ 				echo "Kein Eingabe Gefunden. Abbruch"
+				sfdl_update=false
+				mv "$pwd/update_old.sh" "$pwd/update.sh"
+				break
+				;;
+
+    				*)
+ 				echo -e "\033[31mFalsche Eingabe...'$input'\033[0m"
+ 				;;
+
+				esac
+				done
+			fi			
+		fi
+		#go
+		if [ $sfdl_update = true ]; then
+				exec "$pwd/update.sh"
+		fi
+	else
+		echo "| Keine Updates verfügbar"
+	fi
+fi
+}
 
 status=`ps aux | grep [-i] 'bashloader.sh' 2> /dev/null | wc -l | tr -d '[[:space:]]'`
 if [ "$status" -gt 0 ]; then
@@ -32,9 +154,12 @@ else
 fi
 
 if [ -f "$pwd/sys/setup.txt" ]; then
+	echo "Starte..."
+	checkupdate
 	exec "$pwd/sys/bashloader.sh"
 	exit 0
 fi
+
 
 # macht das bild sauber
 clear
@@ -43,6 +168,8 @@ echo "| -------------------------------------- "
 echo "| BASH-Loader Installer"
 echo "| -------------------------------------- "
 echo "| system: $osxcheck"
+
+
 
 # ==========================================================================================================
 # haben wir alle tools?
@@ -316,33 +443,42 @@ if [ "${#installTools[@]}" != 0 ]; then
 		echo "| -------------------------------------- "
 		echo "| Alle Pakete installiert!"
 		echo "| Prüfe ausführbarkeit!"
-        	if [[ -x "$pwd/sys/bashloader.sh" ]]
-                        then
-                                echo "| Files are executable"
-                        else
-                                echo "| File are not executable or found"
-                                chmod +x -R "$pwd/sys"
-                                echo "| Files are now executable"
-                fi
+        if [[ -x "$pwd/sys/bashloader.sh" ]]; then
+			echo "| Files are executable"
+		else
+			echo "| File are not executable or found"
+			chmod +x -R "$pwd/sys"
+			chmod +x "$pwd/update.sh"
+			echo "| Files are now executable"
+		fi
+		
+		echo "| Prüfe auf Updates..."
+		checkupdate
+		
 		echo "| Starte BASH-Loader in 5 Sekunden ..."
-                echo 1 > "$pwd/sys/setup.txt"
+        echo 1 > "$pwd/sys/setup.txt"
 		sleep 5
 		exec "$pwd/sys/bashloader.sh"
 	fi
 else
 	echo "| -------------------------------------- "
 	echo "| Alle Pakete installiert!"
-        echo "| Prüfe ausführbarkeit!"
-        	if [[ -x "$pwd/sys/bashloader.sh" ]]
-                        then
-                                echo "| Files are executable"
-                        else
-                                echo "| File are not executable or found"
-                                chmod +x -R "$pwd/sys"
-                                echo "| Files are now executable"
-                fi
-                echo "| Starte BASH-Loader in 5 Sekunden ..."
-                echo 1 > "$pwd/sys/setup.txt"
-		sleep 5
-                exec "$pwd/sys/bashloader.sh"
+	echo "| Prüfe ausführbarkeit!"
+	if [[ -x "$pwd/sys/bashloader.sh" ]]; then
+		echo "| Files are executable"
+	else
+        echo "| File are not executable or found"
+		chmod +x -R "$pwd/sys"
+		chmod +x "$pwd/update.sh"
+		chmod +x "$pwd/sys/updatecfg.sh"
+		echo "| Files are now executable"
+	fi
+	
+	echo "| Prüfe auf Updates..."
+	checkupdate
+	
+	echo "| Starte BASH-Loader in 5 Sekunden ..."
+	echo 1 > "$pwd/sys/setup.txt"
+	sleep 5
+	exec "$pwd/sys/bashloader.sh"
 fi
