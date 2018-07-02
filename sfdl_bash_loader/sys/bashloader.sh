@@ -624,14 +624,7 @@ do
 						fi
 						if [ -f "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                                         rm -f "$sfdl_logs/$ladepfad"_lftp_error.log
-  						fi
-
-if [ $debug == true ]; then                                              
-echo $host
-echo $port
-echo $username
-echo $password
-fi
+                                                fi
 						# ping server
 						if ping -q -c 1 $host &> /dev/null
 						then
@@ -1330,7 +1323,6 @@ fi
 		printLinie
 	fi
 done
-
 
 # sind in der zwischenzeit neue sfdl files hinzugekommen?
 
