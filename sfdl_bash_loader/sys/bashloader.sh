@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==========================================================================================================
-# SFDL BASH-Loader - fork by Xenophanes. Original von GrafSauger und raz3r
+# SFDL BASH-Loader - liebevoll gescripted von GrafSauger und raz3r
 # ==========================================================================================================
 # 888888b.         d8888  .d8888b.  888    888        888                            888
 # 888  "88b       d88888 d88P  Y88b 888    888        888                            888
@@ -12,11 +12,14 @@
 # 8888888P" d88P     888  "Y8888P"  888    888        88888888 "Y88P"  "Y888888  "Y88888  "Y8888  888
 # ==========================================================================================================
 # sfdl bash loader version
-sfdl_version="4.0x"
-
-IFSDEFAULT=$IFS
+sfdl_version="3.15"
 
 # pfad definieren
+IFSDEFAULT=$IFS
+
+# strg-c abfangen um entpacken&verschieben zu verhindern
+trap 'exit' INT
+
 # osx: kann nun auch unter mac osx mit doppelklick vom desktop aus gestartet werden
 osxcheck=$(uname)
 if [ $osxcheck == "Darwin" ]; then
@@ -51,7 +54,7 @@ function aes128cbc {
 }
 function BruteForce {
 	while IFS='' read -r line || [[ -n "$line" ]]; do
-		serverip="$(aes128cbc "$line" "$1" | grep -E -o '([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})')"
+		serverip="$(aes128cbc "$line" "$1" | grep -E -o '\.([0-9,a-z,A-Z]{1,3})')"
 		if [ -n "$serverip" ]; then
 			echo $line
 			break
@@ -229,7 +232,7 @@ if [ $sfdl_logo == true ]; then
 			clear
 		fi
 	if [ $sfdl_color_text == true ]; then
-		echo $'\e[1;33;40m''===[SFDL BASH-Loader '$sfdl_version' (Xenophanes)]==========================================================='
+		echo $'\e[1;33;40m''===[SFDL BASH-Loader '$sfdl_version' (GrafSauger,raz3r)]==========================================================='
 		rand=$(((RANDOM % 5) + 1))
 		if [ $rand = 1 ]
 		then
@@ -253,16 +256,16 @@ if [ $sfdl_logo == true ]; then
 		echo -e "                                                                                                         "
 		echo $'\e[1;33;40m'=========================================================================================================$'\e[1;39;49m'
 	else
-		echo -e "===[SFDL BASH-Loader $sfdl_version (Xenophanes)]============================================================="
+		echo -e "===[SFDL BASH-Loader $sfdl_version (GrafSauger,raz3r)]============================================================="
 		cat "$sfdl_sys/logo.txt"
 		echo -e "                                                                                                         "
 		echo -e "========================================================================================================="
 	fi
 else
 	if [ $sfdl_color_text == true ]; then
-		echo $'\e[44m''==[SFDL BASH-Loader v$sfdl_version (Xenophanes)]=='$'\e[49m'
+		echo $'\e[44m''==[SFDL BASH-Loader v$sfdl_version (GrafSauger,raz3r)]=='$'\e[49m'
 	else
-		echo -e "==[SFDL BASH-Loader v$sfdl_version (Xenophanes)]=="
+		echo -e "==[SFDL BASH-Loader v$sfdl_version (GrafSauger,raz3r)]=="
 	fi
 fi
 
@@ -270,10 +273,11 @@ fi
 for sfdl in "$sfdl_files"/*.sfdl
 do
 	if [ $uscript_befor == true ]; then
-	echo "Script" "$uscript_name1" "wird ausgeführt, bitte warten"
-	"$uscript_folder"/"$uscript_name1"
-	echo "Script" "$uscript_name1" "wurde ausgeführt"
+		echo "Userscript wird ausgeführt. Bitte warten...."
+		"$uscript_folder"/before.sh
+		echo "Userscript wurde ausgeführt"
 	fi
+	
 	if [ -f "$sfdl" ]; then
 		# dieses sfdl files wird gerade verarbeitet
 		ladesfdl="${sfdl##*/}"
@@ -334,6 +338,19 @@ do
 				if [ -f "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                         rm -f "$sfdl_logs/$ladepfad"_lftp_error.log
                                 fi
+				# ping server
+				if ping -q -c 1 $host &> /dev/null
+				then
+					printText "PING:" "Server hat auf einen PING geantwortet!"
+				else
+					printErr "ERROR: Server $host hat auf PING nicht geantwortet! Neuer Versuch..."
+					if ping -q -c 5 $host &> /dev/null
+					then
+						printText "PING:" "Server $host hat nun erfogreich auf 5 PINGS geantwortet!"
+					else
+						printErr "ERROR: Server $host antwortet weiterhin auf keine PINGS! FTP online?"
+					fi
+				fi
 				# index mit lftp laden (rekursiv)
 				if [ $bpathArrCnt == 1 ]; then
 					sfdl_wget_download=false
@@ -347,16 +364,19 @@ do
 					printText "Lade Index (lftp):" "$ladepfad"
 					if [ $proxy == true ]; then
 						if [ $proxyauth == true ]; then
-							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 30; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 							else
-					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 30; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 							fi
 					else
-					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set net:timeout 30; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
 					fi
 					if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
 						printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
                                                 printErr "$ladesfdl wird uebersprungen!"
+						ladeerr=$(cat "$sfdl_logs/$ladepfad"_lftp_error.log)
+						printErr "$ladeerr"
+						ladeerr=
                                                 printLinie
 						mkdir -p "$sfdl_files"/error
 						mv "$sfdl" "$sfdl_files"/error/$name.sfdl
@@ -367,6 +387,7 @@ do
 						while IFS='' read -r line || [[ -n "$line" ]]; do
 							if [[ "$line" != d* ]]
 							then
+								#fixxed by raz3r
 								byte=0
 								if [ $sysname == "Darwin" ]; then
 									may_byte="$(echo $line | cut -d ' ' -f 3)"
@@ -544,18 +565,21 @@ do
 				done
 
 				# entschluesseln
-				host="$(aes128cbc "$aes_pass" "$host" | grep -E -o '([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})')"
+				validdec="$(aes128cbc "$aes_pass" "$host" | grep -E -o '\.([0-9,a-z,A-Z]{1,3})')"
+				
 				# konnte host entschluesselt werden?
-				if [ -z "$host" ]; then
+				if [ -z "$validdec" ]; then
 					printErr "$ladesfdl kann mit Passwort $aes_pass nicht entschluesselt werden!"
 					printErr "$ladesfdl wird uebersprungen!"
+					mkdir -p "$sfdl_files"/error
+					mv "$sfdl" "$sfdl_files"/error/$ladesfdl
 					continue
 				else
 					if [ $addNewPass == "true" ]; then
 						echo -e "$aes_pass" >> "$sfdl_sys/passwords.txt"
 					fi
 				fi
-
+				host="$(aes128cbc "$aes_pass" "$host")"
 				name="$(aes128cbc "$aes_pass" "$name")"
 				name="$(echo -n "$name" | sed 's/​//g')"
 				if [ -z "$name" ]; then
@@ -600,8 +624,27 @@ do
 						fi
 						if [ -f "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                                         rm -f "$sfdl_logs/$ladepfad"_lftp_error.log
-                                                fi
+  						fi
 
+if [ $debug == true ]; then                                              
+echo $host
+echo $port
+echo $username
+echo $password
+fi
+						# ping server
+						if ping -q -c 1 $host &> /dev/null
+						then
+							printText "PING:" "Server hat auf einen PING geantwortet!"
+						else
+							printErr "ERROR: Server $host hat auf PING nicht geantwortet! Neuer Versuch..."
+							if ping -q -c 5 $host &> /dev/null
+							then
+								printText "PING:" "Server $host hat nun erfogreich auf 5 PINGS geantwortet!"
+							else
+								printErr "ERROR: Server $host antwortet weiterhin auf keine PINGS! FTP online?"
+							fi
+						fi
 						# index mit lftp laden (rekursiv)
 						if [ $bpathArrCnt == 1 ]; then
 							sfdl_wget_download=false
@@ -613,18 +656,21 @@ do
 							
 							ladepfad="${i##*/}"
 							printText "Lade Index (lftp):" "$ladepfad"
-						if [ $proxy == true ]; then
-							if [ $proxyauth == true ]; then
-							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
-							else
-					lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
-							fi
-						else
-							lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set net:timeout 5; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
-							fi
+								if [ $proxy == true ]; then
+									if [ $proxyauth == true ]; then
+										lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyuser:$proxypass@$proxyip:$proxyport; set net:timeout 30; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+									else
+										lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set ftp:proxy $proxytyp://$proxyip:$proxyport; set net:timeout 30; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+									fi
+								else
+									lftp -p $port -u "$username","$password" -e "set ssl:verify-certificate no; set net:timeout 30; set net:reconnect-interval-base 5; set net:max-retries 2; set ftp:ssl-allow no; open && find -l '$i' && exit" $host 2> $sfdl_logs/$ladepfad'_lftp_error.log' 1> $sfdl_logs/$ladepfad'_lftp_index.log'
+								fi
 							if [ -s "$sfdl_logs/$ladepfad"_lftp_error.log ]; then
                                                 		printErr "FEHLER: Es konnte kein Index der FTP-Daten erstellt werden!"
                                                 		printErr "$ladesfdl wird uebersprungen!"
+								ladeerr=$(cat "$sfdl_logs/$ladepfad"_lftp_error.log)
+								printErr "$ladeerr"
+								ladeerr=
                                                 		printLinie
 								mkdir -p "$sfdl_files"/error
                                                 		mv "$sfdl" "$sfdl_files"/error/$name.sfdl
@@ -635,6 +681,7 @@ do
 								while IFS='' read -r line || [[ -n "$line" ]]; do
 									if [[ "$line" != d* ]]
 									then
+										#fixxed by raz3r
 										byte=0
 										if [ $sysname == "Darwin" ]; then
 											may_byte="$(echo $line | cut -d ' ' -f 3)"
@@ -768,27 +815,20 @@ do
 			fi
 		fi
 
-		# ping server
-		if ping -q -c 1 $host &> /dev/null
-		then
-			printText "PING:" "Server hat auf einen PING geantwortet!"
-		else
-			printErr "ERROR: Server $host hat auf PING nicht geantwortet! Neuer Versuch..."
-			if ping -q -c 5 $host &> /dev/null
-			then
-				printText "PING:" "Server $host hat nun erfogreich auf 5 PINGS geantwortet!"
-			else
-				printErr "ERROR: Server $host antwortet weiterhin auf keine PINGS! FTP online?"
-			fi
-		fi
-
 		# speedreport erstellen?
 		do_speedreport=true
-		if [ $sfdl_wget_download == true ]; then
+		if [ $sfdl_wget_download == true ] || [ $sfdl_lftp_download == true ]; then
 			dltimeX1=$(date +"%s" 2>/dev/null)
 			if [ -z "dltime1" ]; then
 				printErr "Es wird kein Speedreport erstellt, da - date - keine Antwort gab!"
 				do_speedreport=false
+			fi
+			
+			resumedl=0
+			resumetime=0
+			if [ -f "$sfdl_logs/$name.txt" ]; then
+				resumedl=1
+				resumetime=$(cat "$sfdl_logs/$name.txt")
 			fi
 		fi
 
@@ -803,7 +843,7 @@ do
                     printErr "Leeres (filearray) Array: Keine Dateien gefunden!"
                     printErr "Kein Download moeglich, wird uebersprungen..."
 		    mkdir -p "$sfdl_files"/error
-		    mv "$sfdl" "$sfdl_files"/error/$name.sfdl		    
+		    mv "$sfdl" "$sfdl_files"/error/$name.sfdl
                     continue
                 fi
 
@@ -826,12 +866,12 @@ do
 						if [ $proxyauth == true ]; then
 							lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:proxy "'$proxytyp'"://"'$proxyuser'":"'$proxypass'"@"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
 							else
-					lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:proxy "'$proxytyp'"://"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
+								lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:proxy "'$proxytyp'"://"'$proxyip'":"'$proxyport'"; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
 							fi
-					else
+				else
 					lftp -p $port -u "$username","$password" -e 'set ssl:verify-certificate no; set ftp:ssl-allow no; mirror --continue --parallel="'$maxdl'" -vvv --log="'$sfdl_logs/$name'_lftp.log" "'$DLPATH'" "'$sfdl_downloads/$name'"; exit' $host > "$sfdl_logs/$name"_download.log | "$sfdl_sys/prog.sh" "$sfdl_downloads/$name" "$bsize" "$pwd" "${filearray[@]}"
-					fi
-			else
+				fi
+				else
 				printErr "Es wurde kein lftp gefunden! Bitte lftp installieren!"
 				printLinie
 				exit
@@ -850,6 +890,8 @@ do
 					if [ ${#broot[@]} -eq 0 ]; then
 						printErr "Leeres (broot) Array: Keine Dateien gefunden!"
 						printErr "Kein Download moeglich, wird uebersprungen..."
+						mkdir -p "$sfdl_files"/error
+						mv "$sfdl" "$sfdl_files"/error/$name.sfdl
 						continue
 					else
 						printText "Dateien die insgesamt geladen werden:" "${#broot[@]}"
@@ -892,14 +934,14 @@ do
 				rm -f "$sfdl_logs/$name"_lftp.log
 				rm -f "$sfdl_logs/$name"_download.log
 				rm -f "$sfdl_logs/dl.txt"
-				rm -f "$sfdl_logs/version.txt"
+				rm -f "$sfdl_logs/$name.txt"
 			fi
 			if [ $sfdl_wget_download == true ]; then
 				printText "Logs:" "Entferne Logfiles (wget)"
 				rm -f "$sfdl_downloads/$name/"index.html*
 				rm -f "$sfdl_downloads/$name/".listing
 				rm -f "$sfdl_logs/dl.txt"
-				rm -f "$sfdl_logs/version.txt"
+				rm -f "$sfdl_logs/$name.txt"
 			fi
 		fi
 
@@ -910,14 +952,10 @@ do
 			dltimeX2=$(date +"%s")
 			#berechne vergangene sekunden
 			dltime=$(expr $dltimeX2 - $dltimeX1 2>/dev/null)
-			resumedl=0
-			if [ -f "$sfdl_logs/$name.txt" ]; then
-				resumedl=1
-				resumetime=$(cat "$sfdl_logs/$name.txt")
-				rm -f "$sfdl_logs/$name.txt"
-			fi
 			if [ "$resumedl" == "1" ]; then
-				dltimeX=$((dltimeX+resumetime))
+				dltimeX=$((dltime + resumetime))
+			else
+				dltimeX=$((dltime))
 			fi
 			if [ $syscore == "darwin" ]; then
 				speedtime=$(date -u -r $dltimeX +%T 2>/dev/null)
@@ -965,7 +1003,7 @@ do
 				echo  >> "$sfdl_downloads/$name/speedreport.txt"
 				echo Kommentar: Danke! >> "$sfdl_downloads/$name/speedreport.txt"
 				if [ $sfdl_eigenwerbung == true ]; then
-					echo -e "[SIZE=1]Powered by [url=https://github.com/JobbeDeluxe/sfdl-bash-loader]SFDL BASH-Loader[/url] $sfdl_version[/SIZE]" >> "$sfdl_downloads/$name/speedreport.txt"
+					echo -e "[SIZE=1]Powered by [url=https://github.com/raz3r-code/sfdl-bash-loader/releases]SFDL BASH-Loader[/url] $sfdl_version[/SIZE]" >> "$sfdl_downloads/$name/speedreport.txt"
 				fi
 			fi
 		else
@@ -1097,12 +1135,7 @@ do
 				mv "$sfdl" "$sfdl_downloads/$name/$name.sfdl"
 			fi
 		fi
-		if [ $uscript_after == true ]; then
-		echo "Script" "$uscript_name1" "wird ausgeführt, bitte warten"
-		"$uscript_folder"/"$uscript_name2"
-		echo "Script" "$uscript_name2" "wurde ausgeführt"
-		fi
-
+		
 		# xrel.to - tmdb.org mod
 		if [ $rar_error == false ]; then
 			if [ $sfdl_xrel_tmdb_mod == true ]; then
@@ -1282,7 +1315,12 @@ do
 		printLinie
 
 		printJSON "done" "NULL"
-
+		
+		if [ $uscript_after == true ]; then
+			echo "Userscript wird ausgeführt. Bitte warten...."
+			"$uscript_folder"/after.sh
+			echo "Userscript wurde ausgeführt"
+		fi
 	else
 		if [ "$WEBSERVER" == "ONLINE" ]; then
 			printText "Webinterface ONLINE:" "http://$MYIP:$sfld_status_webserver_port"
@@ -1292,6 +1330,7 @@ do
 		printLinie
 	fi
 done
+
 
 # sind in der zwischenzeit neue sfdl files hinzugekommen?
 
@@ -1304,11 +1343,11 @@ if [ `ls -a "$sfdl_files"/*.sfdl 2>/dev/null | wc -l` != 0 ] ; then
 	exec "$pwd/bashloader.sh"
 	exit 0
 else
-	printText "Alle Download abgeschlossen"	
+	printText "Alle Downloads abgeschlossen"
 	if [ $uscript_end == true ]; then
-	echo "Script" "$uscript_name1" "wird ausgeführt, bitte warten"	
-	"$uscript_folder"/"$uscript_name3"
-	echo "Script" "$uscript_name3" "wurde ausgeführt"
+			echo "Userscript wird ausgeführt. Bitte warten...."
+			"$uscript_folder"/end.sh
+			echo "Userscript wurde ausgeführt"
 	fi
 	exit 0
 fi
