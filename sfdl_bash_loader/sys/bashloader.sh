@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==========================================================================================================
-# SFDL BASH-Loader - liebevoll gescripted von GrafSauger und raz3r
+# SFDL BASH-Loader - Xeno Fork Original from: GrafSauger und raz3r
 # ==========================================================================================================
 # 888888b.         d8888  .d8888b.  888    888        888                            888
 # 888  "88b       d88888 d88P  Y88b 888    888        888                            888
@@ -232,7 +232,7 @@ if [ $sfdl_logo == true ]; then
 			clear
 		fi
 	if [ $sfdl_color_text == true ]; then
-		echo $'\e[1;33;40m''===[SFDL BASH-Loader '$sfdl_version' (GrafSauger,raz3r)]==========================================================='
+		echo $'\e[1;33;40m''===[SFDL BASH-Loader '$sfdl_version' (Xenophanes)]==========================================================='
 		rand=$(((RANDOM % 5) + 1))
 		if [ $rand = 1 ]
 		then
@@ -256,16 +256,16 @@ if [ $sfdl_logo == true ]; then
 		echo -e "                                                                                                         "
 		echo $'\e[1;33;40m'=========================================================================================================$'\e[1;39;49m'
 	else
-		echo -e "===[SFDL BASH-Loader $sfdl_version (GrafSauger,raz3r)]============================================================="
+		echo -e "===[SFDL BASH-Loader $sfdl_version (Xenophanes)]============================================================="
 		cat "$sfdl_sys/logo.txt"
 		echo -e "                                                                                                         "
 		echo -e "========================================================================================================="
 	fi
 else
 	if [ $sfdl_color_text == true ]; then
-		echo $'\e[44m''==[SFDL BASH-Loader v$sfdl_version (GrafSauger,raz3r)]=='$'\e[49m'
+		echo $'\e[44m''==[SFDL BASH-Loader v$sfdl_version (Xenophanes)]=='$'\e[49m'
 	else
-		echo -e "==[SFDL BASH-Loader v$sfdl_version (GrafSauger,raz3r)]=="
+		echo -e "==[SFDL BASH-Loader v$sfdl_version (Xenophanes)]=="
 	fi
 fi
 
@@ -996,7 +996,7 @@ do
 				echo  >> "$sfdl_downloads/$name/speedreport.txt"
 				echo Kommentar: Danke! >> "$sfdl_downloads/$name/speedreport.txt"
 				if [ $sfdl_eigenwerbung == true ]; then
-					echo -e "[SIZE=1]Powered by [url=https://github.com/raz3r-code/sfdl-bash-loader/releases]SFDL BASH-Loader[/url] $sfdl_version[/SIZE]" >> "$sfdl_downloads/$name/speedreport.txt"
+					echo -e "[SIZE=1]Powered by [url=https://github.com/JobbeDeluxe/sfdl-bash-loader]SFDL BASH-Loader by Xeno[/url] $sfdl_version[/SIZE]" >> "$sfdl_downloads/$name/speedreport.txt"
 				fi
 			fi
 		else
