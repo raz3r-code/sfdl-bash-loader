@@ -47,7 +47,7 @@ fi
 
 clear
 echo "# ======================================================================================================="
-echo "# SFDL BASH-Loader - Installer/Updater - raz3r - Version $upd_version"
+echo "# SFDL BASH-Loader - Installer/Updater - Version $upd_version"
 echo "# ======================================================================================================="
 echo "| system: $osxcheck"
 
