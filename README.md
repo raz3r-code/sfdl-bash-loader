@@ -5,7 +5,7 @@ Zum einfachen herunterladen mit SFDL Dateien unter Linux und Mac
 ## Installation
 
 ```
-wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh && chmod +x ./update.sh && ./update.sh install; rm -rf update.sh
+wget https://raw.githubusercontent.com/JobbeDeluxe/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh && chmod +x ./update.sh && ./update.sh install; rm -rf update.sh
 ```
 
 #### Alternativ:
@@ -16,6 +16,11 @@ unzip sfdl-bash-loader-X.X.zip
 Ins Verzeichnis wechseln: 
 ```
 cd sfdl-bash-loader-X.X/sfdl_bash_loader  
+```
+
+Rechte vergeben: 
+```
+sudo chmod +x ./start.sh 
 ```
 
 ## Starten
