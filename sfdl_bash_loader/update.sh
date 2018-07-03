@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==========================================================================================================
-# SFDL BASH-Loader - Updater - raz3r
+# SFDL BASH-Loader - Updater
 # ==========================================================================================================
 # 888888b.         d8888  .d8888b.  888    888        888                            888                  
 # 888  "88b       d88888 d88P  Y88b 888    888        888                            888                  
@@ -15,8 +15,8 @@ upd_version=1.0
 version_repo=0
 version_local=0
 first_install=false
-url_repoversion="https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/sys/logs/version.txt"
-url_repodownload="https://github.com/raz3r-code/sfdl-bash-loader/trunk/sfdl_bash_loader/"
+url_repoversion="https://raw.githubusercontent.com/JobbeDeluxe/sfdl-bash-loader/master/sfdl_bash_loader/sys/logs/version.txt"
+url_repodownload="https://github.com/JobbeDeluxe/sfdl-bash-loader/trunk/sfdl_bash_loader/"
 
 
 status=`ps aux | grep [-i] 'bashloader.sh' 2> /dev/null | wc -l | tr -d '[[:space:]]'`
@@ -47,7 +47,7 @@ fi
 
 clear
 echo "# ======================================================================================================="
-echo "# SFDL BASH-Loader - Installer/Updater - raz3r - Version $upd_version"
+echo "# SFDL BASH-Loader - Installer/Updater - Version $upd_version"
 echo "# ======================================================================================================="
 echo "| system: $osxcheck"
 
@@ -145,7 +145,6 @@ if [ $(($version_local)) -lt $(($version_repo)) ]; then
 		mv "$pwd/sys/loader.cfg" "$pwd/backup/loader.cfg.new"
 		chmod +x "$pwd/sys/updatecfg.sh"
 		"$pwd/sys/updatecfg.sh" "$pwd/backup/loader.cfg.new" "$pwd/backup/loader.cfg.bak" "$pwd/sys/force.cfg" "$pwd/sys/loader.cfg"
-		#cp -rf "$pwd/backup/loader.cfg" "$pwd/sys/loader.cfg"
 		cp -rf "$pwd/backup/passwords.txt" "$pwd/sys/passwords.txt"
 		rm -rf "$pwd/backup/"
 	fi
@@ -199,6 +198,7 @@ if [ "${#installTools[@]}" != 0 ]; then
 				done
 			fi
 			if [ $usesudo == 1 ]; then
+				echo "| Es wird installiert.... Bitte Warten"
 				echo $sudopass | sudo -S apt-get --yes --force-yes install ${installTools[@]} > /dev/null
 			else
 				apt-get --yes --force-yes install ${installTools[@]} > /dev/null

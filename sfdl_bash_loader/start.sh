@@ -13,7 +13,7 @@
 # ==========================================================================================================
 version_repo=0
 version_local=0
-url_repoversion="https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/sys/logs/version.txt"
+url_repoversion="https://raw.githubusercontent.com/JobbeDeluxe/sfdl-bash-loader/master/sfdl_bash_loader/sys/logs/version.txt"
 
 
 #gibt es ein update
@@ -82,7 +82,7 @@ if ! [ $sfdl_update = false ]; then
 			fi 
 			
 			#hole neues Update script
-			wget https://raw.githubusercontent.com/raz3r-code/sfdl-bash-loader/master/sfdl_bash_loader/update.sh -v -O update.sh 1> /dev/null
+			wget https://raw.githubusercontent.com/JobbeDeluxe/sfdl-bash-loader/master/sfdl_bash_loader/update.sh 1> /dev/null
 			#neue update.sh da? sonst mit alte behalten!
 			if [ -f "$pwd/update.sh" ]; then
 				rm -rf "$pwd/update_old.sh"
@@ -418,6 +418,7 @@ if [ "${#installTools[@]}" != 0 ]; then
 				done
 			fi
 			if [ $usesudo == 1 ]; then
+				echo "| Es wird installiert.... Bitte Warten"
 				echo $sudopass | sudo -S apt-get --yes --force-yes install ${installTools[@]} > /dev/null
 			else
 				apt-get --yes --force-yes install ${installTools[@]} > /dev/null
