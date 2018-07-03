@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#----Beispiel zum Übertragen anch bendetem Download zu einem anderem Server
+#----Beispiel zum Übertragen nach dem alle Downloads Fertig sind zu einem anderem Server
 #
 #pwd="`dirname \"$0\"`"
 #source "$pwd/../sys/loader.cfg"
