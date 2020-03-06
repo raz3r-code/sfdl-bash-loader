@@ -104,8 +104,7 @@ do
 	JSDATE=`date -u +"%FT%T.000Z"`
 	
 	# datei updates
-	if [ $sfdl_status_webserver == true ]
-	then
+
 		FILES=()
 		IFS=$'\r\n'
 		if [ $sysnameX == "Darwin" ]; then
@@ -154,7 +153,7 @@ do
 		files_json="$(joinMe ";" "${FLISTARR[@]}")"
 		
 		echo -ne "{ \"BASHLoader\" : [ { \"version\":\"$loader_version\", \"date\":\"$JSDATE\", \"datetime\":\"$DATETIME\", \"status\":\"running\", \"sfdl\":\"$dlname.sfdl\", \"action\":\"loading\", \"loading_mt_files\":\"$files_mt\", \"loading_total_files\":\"$files_max\", \"loading\":\"$progH|$progB|$progM|$downloaded|$mbsec|$speedtimeX|$speedtime_eta\", \"loading_file_array\":\"$files_json\" } ] }" > "$sfdl_status_json_file"
-	fi
+	
 	if [[ "$downloaded" -le "9" ]]; then
 		printText "Wird geladen:" "$progH ($progB KB / $progM KB) [----------] $downloaded% ($mbsec MB/s) [$speedtimeX]/[$speedtime_eta]"
 	fi
