@@ -848,12 +848,13 @@ do
 				DLPATH=${bpath[0]}
                 DLPATH="$(echo $DLPATH | sed 's/&#32;/ /g')"
 				printText "Dateien die insgesamt geladen werden:" "${#filearray[@]}"
-				printText "Dateien die gleichzeitig geladen werden:" "$maxdl"
+				
 				if [ $sfdl_wget_multithreads == sfdl ]; then
 					maxdl=$maxdl
 				else
 					maxdl=$sfdl_wget_multithreads
 				fi
+				printText "Dateien die gleichzeitig geladen werden:" "$maxdl"
 				echo -n "${#filearray[@]}|$maxdl" > $sfdl_logs/dl.txt
 				if [ $proxy == true ]; then
 						if [ $proxyauth == true ]; then
