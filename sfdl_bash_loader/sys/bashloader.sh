@@ -1326,6 +1326,15 @@ do
 			"$uscript_folder"/after.sh
 			echo "Userscript wurde ausgeführt"
 		fi
+		if [ $history == true ]; then
+			datum=$(date +"%y-%m-%d %H:%M:%S")
+			echo "$datum $name" >> $sfdl_logs/History.txt
+		fi
+		if [ $sample_remove == true ]; then
+			for sample in "$(find $pwd/../downloads -iname *sample*)";  do
+				rm -rf -- $sample
+			done
+		fi
 	else
 		if [ "$WEBSERVER" == "ONLINE" ]; then
 			printText "Webinterface ONLINE:" "http://$MYIP:$sfld_status_webserver_port"
