@@ -27,6 +27,10 @@ uscript_befor=$uscript_befor               			#Userscript vor dem Download ausf�
 uscript_after=$uscript_after               			#Userscript nach dem Download ausführen. true zum aktivieren
 uscript_end=$uscript_end               				#Userscript nach dem kompletten Download ausführen. true zum aktivieren
 #==========================================================================================================
+#Features
+history=$history						# true = es wird in /logs/History.txt der Download verlauf mit Datum angelegt.
+sample_remove=$sample_remove        #entfernt alle daten im Download ordner die das wort "sample" enthalten. (achtung bei filmen oder sereien die eventuell einen namen mit sample haben.
+#==========================================================================================================
 #Proxy Einstellungen
 proxy=$proxy                     			#true zum proxy aktivieren 
 proxyauth=$proxyauth                   			#true wenn proxy Username oder password erforderlich. ansonsten werden die user und pass ignoriert
