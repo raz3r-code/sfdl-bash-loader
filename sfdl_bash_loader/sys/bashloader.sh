@@ -269,6 +269,12 @@ else
 	fi
 fi
 
+# uppercase to lowercase
+for file in "$sfdl_files"/*.SFDL
+do
+    mv "$file" "$sfdl_files"/"$(basename "$file" .SFDL).sfdl"
+done
+
 # haben wir sfdl files?
 for sfdl in "$sfdl_files"/*.sfdl
 do
